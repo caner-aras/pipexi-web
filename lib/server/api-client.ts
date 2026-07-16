@@ -38,11 +38,32 @@ function parseErrorMessage(
     return "Request failed";
   }
 
-  if (typeof error === "string") {
-    return error;
+  const rawMessage =
+    typeof error === "string"
+      ? error
+      : error.message ?? error.title ?? "Request failed";
+
+  if (rawMessage && typeof rawMessage === "string") {
+    const trimmed = rawMessage.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && typeof parsed === "object") {
+          return (
+            parsed.msg ||
+            parsed.message ||
+            parsed.error_description ||
+            parsed.title ||
+            rawMessage
+          );
+        }
+      } catch {
+        // Fallback to raw message if parsing fails
+      }
+    }
   }
 
-  return error.message ?? error.title ?? "Request failed";
+  return rawMessage;
 }
 
 type BackendFetchOptions = RequestInit & {

@@ -8,7 +8,10 @@ import { ACCESS_TOKEN_COOKIE, type AuthUser } from "@/types/auth";
 export const metadata: Metadata = {
   title: "Pipexi — One place to run every workday",
   description:
-    "Schedule shifts, track time, assign tasks, and keep teams in sync with Pipexi.",
+    "Schedule shifts, track time, assign tasks, and keep frontline teams in sync with Pipexi.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default async function HomePage() {
