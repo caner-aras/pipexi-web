@@ -63,7 +63,7 @@ export function LandingPage({ user }: LandingPageProps) {
         <LandingIntegrations />
         <LandingTestimonials />
         <LandingPricing displayName={displayName} />
-        <LandingUpdates />
+        {/* <LandingUpdates /> */}
         <LandingFaq />
         <LandingCta displayName={displayName} />
       </main>

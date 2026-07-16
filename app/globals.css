@@ -215,3 +215,40 @@
     background: white !important;
   }
 }
+
+/* Infinite Marquee Animations */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 12px)); /* -50% of the combined duplicated width minus half of the gap offset */
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(calc(-50% - 12px));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 50s linear infinite;
+}
+
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 50s linear infinite;
+}
+
+/* Pause marquee on hover for better user experience */
+.animate-marquee:hover,
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
