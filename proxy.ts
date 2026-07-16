@@ -8,7 +8,7 @@ const FORGOT_PASSWORD_PATH = "/forgot-password";
 const CALLBACK_PATH = "/auth/callback";
 const DASHBOARD_PATH = "/dashboard";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = !!request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
 
