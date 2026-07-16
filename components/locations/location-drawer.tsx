@@ -169,7 +169,7 @@ function LocationForm({
               value={name}
               onChange={(event) => setName(event.target.value)}
               disabled={isSubmitting}
-              placeholder="Gölbaşı Office"
+              placeholder="High Office"
             />
           </div>
 
