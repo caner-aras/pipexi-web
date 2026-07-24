@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { ArrowLeft } from "lucide-react";
 
 import { TeamMemberDetailsView } from "@/components/team-members/team-member-details-view";

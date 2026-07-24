@@ -9,7 +9,7 @@ import {
   User,
   UsersRound,
 } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";

@@ -9,7 +9,7 @@ import {
   MapPin,
   UsersRound,
 } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useMemo, useRef, useState } from "react";
 
 import { ShiftsDateRangePicker } from "@/components/shifts/shifts-date-range-picker";

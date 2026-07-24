@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { Building2, Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";

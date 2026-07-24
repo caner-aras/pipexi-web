@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 

@@ -14,7 +14,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

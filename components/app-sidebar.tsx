@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { NavLink } from "@/components/ui/nav-link";
 import { usePathname } from "next/navigation";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
@@ -44,7 +44,7 @@ export function AppSidebar({ user, userError }: AppSidebarProps) {
             <SidebarMenuButton
               size="lg"
               tooltip="Pipexi"
-              render={<Link href="/dashboard" />}
+              render={<NavLink href="/dashboard" />}
               className="data-[size=lg]:h-12 group-data-[collapsible=icon]:justify-center"
             >
               <BrandLogo
@@ -87,7 +87,7 @@ export function AppSidebar({ user, userError }: AppSidebarProps) {
                       <SidebarMenuButton
                         isActive={isActive}
                         tooltip={item.label}
-                        render={<Link href={item.path} />}
+                        render={<NavLink href={item.path} />}
                       >
                         <Icon />
                         <span>{item.label}</span>

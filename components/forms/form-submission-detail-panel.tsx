@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarDays, ClipboardList, MoreHorizontalIcon } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

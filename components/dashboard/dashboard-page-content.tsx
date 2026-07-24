@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import {
   AlertTriangle,
   ArrowUpRight,

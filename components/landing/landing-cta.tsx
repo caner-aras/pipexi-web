@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 
 interface LandingCtaProps {
   displayName: string | null;

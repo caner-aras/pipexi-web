@@ -8,7 +8,7 @@ import {
   ExternalLink,
   MessageSquareText,
 } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";

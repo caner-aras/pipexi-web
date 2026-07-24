@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { ArrowLeft, Printer } from "lucide-react";
 
 import { FormSubmissionDetailPanel } from "@/components/forms/form-submission-detail-panel";

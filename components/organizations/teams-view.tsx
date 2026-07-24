@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { MoreHorizontalIcon, Search, UsersRound } from "lucide-react";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, MoreHorizontalIcon, Search, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -297,14 +297,17 @@ export function OrganizationMemberList({
                 return (
                   <TableRow key={member.id}>
                     <TableCell className="font-medium w-56">
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-2 text-left transition-opacity hover:opacity-80"
-                        onClick={() => handleOpenUserProfile(member)}
-                      >
-                        <ArrowUpRight className="size-4 shrink-0" />
-                        {getMemberDisplayName(member)}
-                      </button>
+                      {profileHref ? (
+                        <Link
+                          href={profileHref}
+                          className="inline-flex items-center gap-2 text-left transition-opacity hover:opacity-80 hover:underline"
+                        >
+                          <ArrowUpRight className="size-4 shrink-0" />
+                          {getMemberDisplayName(member)}
+                        </Link>
+                      ) : (
+                        <span>{getMemberDisplayName(member)}</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-muted-foreground w-56">
                       {member.user.email}
@@ -330,6 +333,11 @@ export function OrganizationMemberList({
                           <span className="sr-only">Open menu</span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleOpenUserProfile(member)}
+                          >
+                            View profile
+                          </DropdownMenuItem>
                           {profileHref ? (
                             <DropdownMenuItem
                               render={<Link href={profileHref} />}

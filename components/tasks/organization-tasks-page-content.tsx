@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarClock, CheckSquare, Plus, UserRound } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/layout/page-header";

@@ -10,7 +10,7 @@ import {
   MoreHorizontalIcon,
   Timer,
 } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getCurrencySymbol } from "@/lib/organization-currencies";
 

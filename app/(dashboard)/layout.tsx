@@ -13,6 +13,7 @@ import {
 } from "@/lib/server/selected-organization";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { AuthUser, Organization } from "@/types/auth";
+import { NavigationLoadingProvider } from "@/providers/navigation-loading-provider";
 
 export default async function DashboardLayout({
   children,
@@ -60,21 +61,23 @@ export default async function DashboardLayout({
       initialSelectedOrganizationId={initialSelectedOrganizationId}
     >
       <UnauthorizedHandler />
-      <SidebarProvider>
-        <AppSidebar user={user} userError={userError} />
-        <SidebarInset className="min-w-0">
-          <OrganizationTasksProvider>
-            <TeamMemberTasksProvider>
-              <div className="print:hidden">
-                <DashboardHeader organizationsError={organizationsError} />
-              </div>
-              <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden bg-muted/20 print:bg-white print:overflow-visible">
-                {children}
-              </div>
-            </TeamMemberTasksProvider>
-          </OrganizationTasksProvider>
-        </SidebarInset>
-      </SidebarProvider>
+      <NavigationLoadingProvider>
+        <SidebarProvider>
+          <AppSidebar user={user} userError={userError} />
+          <SidebarInset className="min-w-0">
+            <OrganizationTasksProvider>
+              <TeamMemberTasksProvider>
+                <div className="print:hidden">
+                  <DashboardHeader organizationsError={organizationsError} />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden bg-muted/20 print:bg-white print:overflow-visible">
+                  {children}
+                </div>
+              </TeamMemberTasksProvider>
+            </OrganizationTasksProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </NavigationLoadingProvider>
     </OrganizationProvider>
   );
 }

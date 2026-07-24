@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { NavLink } from "@/components/ui/nav-link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -69,7 +69,7 @@ export function SidebarCollapsibleNavItem({
             <SidebarMenuSubItem key={subItem.key}>
               <SidebarMenuSubButton
                 isActive={isPathActive(pathname, subItem.path)}
-                render={<Link href={subItem.path} />}
+                render={<NavLink href={subItem.path} />}
               >
                 <span>{subItem.label}</span>
               </SidebarMenuSubButton>

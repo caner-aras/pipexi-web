@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList, MoreHorizontalIcon, Search } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { toast } from "sonner";
 
 import { FormSubmissionDetailPanel } from "@/components/forms/form-submission-detail-panel";

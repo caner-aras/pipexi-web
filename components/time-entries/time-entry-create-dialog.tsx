@@ -13,7 +13,7 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import Link from "next/link";
+import { NavLink as Link } from "@/components/ui/nav-link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
