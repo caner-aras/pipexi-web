@@ -36,7 +36,9 @@ export function DashboardHeader({ organizationsError }: DashboardHeaderProps) {
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border/50 px-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <SidebarTrigger />
-        <DashboardBreadcrumb />
+        <div className="hidden md:block min-w-0 flex-1">
+          <DashboardBreadcrumb />
+        </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
@@ -51,7 +53,9 @@ export function DashboardHeader({ organizationsError }: DashboardHeaderProps) {
           disabled={isLoggingOut}
         >
           <LogOut className="size-4" />
-          {isLoggingOut ? "Logging out..." : "Logout"}
+          <span className="hidden sm:inline">
+            {isLoggingOut ? "Logging out..." : "Logout"}
+          </span>
         </Button>
       </div>
     </header>

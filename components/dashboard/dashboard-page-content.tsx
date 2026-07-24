@@ -699,7 +699,7 @@ function ScheduleFeed({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-px border-t border-border/50 bg-border/40">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px border-t border-border/50 bg-border/40">
                   {[
                     {
                       label: "Shifts",

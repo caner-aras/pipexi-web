@@ -194,8 +194,8 @@ export function OrganizationSwitcher({ error }: OrganizationSwitcherProps) {
             }
           }}
         >
-          <SelectTrigger size="default" className="min-w-[300px]">
-            <Building2 className="size-4 text-muted-foreground" />
+          <SelectTrigger size="default" className="w-[120px] sm:w-[200px] md:min-w-[250px] lg:min-w-[300px]">
+            <Building2 className="size-4 text-muted-foreground shrink-0" />
             <SelectValue placeholder="Select organization" />
           </SelectTrigger>
           <SelectContent align="start">
@@ -220,6 +220,7 @@ export function OrganizationSwitcher({ error }: OrganizationSwitcherProps) {
           onClick={handleViewLocations}
           disabled={!selectedOrganization}
           title="View locations"
+          className="hidden sm:inline-flex"
         >
           <MapPin className="size-4" />
           <span className="sr-only">View locations</span>
