@@ -5,6 +5,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { TimezonePicker } from "@/components/organizations/timezone-picker";
+import { POPULAR_CURRENCIES } from "@/lib/organization-currencies";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -71,6 +79,9 @@ function OrganizationForm({
   const [timezone, setTimezone] = useState<string | null>(
     organization?.timezone ?? defaults?.timezone ?? defaultTimezone
   );
+  const [currency, setCurrency] = useState<string>(
+    organization?.currency ?? "USD"
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,6 +110,7 @@ function OrganizationForm({
       name: name.trim(),
       slug: slug.trim(),
       timezone,
+      currency,
     };
 
     try {
@@ -145,7 +157,7 @@ function OrganizationForm({
   }
 
   const isValid =
-    Boolean(name.trim()) && Boolean(slug.trim()) && Boolean(timezone);
+    Boolean(name.trim()) && Boolean(slug.trim()) && Boolean(timezone) && Boolean(currency);
 
   return (
     <>
@@ -171,6 +183,31 @@ function OrganizationForm({
               disabled={isSubmitting}
               placeholder="acme-corp"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Currency</Label>
+            <Select
+              value={currency}
+              onValueChange={(val) => val && setCurrency(val)}
+              disabled={isSubmitting}
+            >
+              <SelectTrigger id="organization-currency" className="w-full">
+                <SelectValue placeholder="Select currency">
+                  {(val) => {
+                    const match = POPULAR_CURRENCIES.find((c) => c.code === val);
+                    return match ? `${match.code} (${match.symbol}) - ${match.name}` : val;
+                  }}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {POPULAR_CURRENCIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code} label={`${c.code} (${c.symbol}) - ${c.name}`}>
+                    {c.code} ({c.symbol}) - {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

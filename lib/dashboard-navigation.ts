@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Bell,
+  Briefcase,
   Building2,
   CalendarCheck2,
   CalendarDays,
@@ -41,6 +42,7 @@ export interface DashboardNavGroup {
 const iconMap = {
   LayoutDashboard,
   Building2,
+  Briefcase,
   Users,
   UsersRound,
   Shield,
@@ -80,6 +82,7 @@ export const dashboardNavGroups: DashboardNavGroup[] = [
     items: [
       navItem("organizations", "Organizations", "/organizations", "Building2"),
       navItem("teams", "Teams", "/teams", "UsersRound"),
+      navItem("positions", "Positions", "/positions", "Briefcase"),
       //navItem("roles", "Roles", "/roles", "Shield"),
     ],
   },
@@ -109,7 +112,6 @@ export const dashboardNavGroups: DashboardNavGroup[] = [
         "CalendarCheck2"
       ),
       navItem("notifications", "Notifications", "/notifications", "Bell"),
-      navItem("auditLogs", "Audit Logs", "/audit-logs", "History"),
     ],
   },
   {

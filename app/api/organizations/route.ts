@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     name?: string;
     slug?: string;
     timezone?: string;
+    currency?: string;
   };
 
   if (!payload.name?.trim() || !payload.slug?.trim() || !payload.timezone?.trim()) {
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
       name: payload.name.trim(),
       slug: payload.slug.trim(),
       timezone: payload.timezone.trim(),
+      currency: payload.currency?.trim() || "USD",
     });
 
     return NextResponse.json({ data: organization });

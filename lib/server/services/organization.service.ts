@@ -28,12 +28,14 @@ export interface CreateOrganizationInput {
   name: string;
   slug: string;
   timezone: string;
+  currency?: string;
 }
 
 export interface UpdateOrganizationInput {
   name: string;
   slug: string;
   timezone: string;
+  currency?: string;
 }
 
 export async function createOrganization(
@@ -147,3 +149,5 @@ export async function getOrganizationTasks(
 ): Promise<WorkTask[]> {
   return backendFetch<WorkTask[]>(`/organizations/${organizationId}/tasks`);
 }
+
+export { getOrganizationPositions } from "@/lib/server/services/position.service";

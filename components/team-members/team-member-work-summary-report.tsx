@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getCurrencySymbol } from "@/lib/organization-currencies";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -171,8 +172,15 @@ function WorkSummaryStatsGrid({
       iconClassName: "bg-amber-400/15 text-amber-600 dark:text-amber-400",
     },
     {
-      label: "Report range",
-      value: `${formatDatePickerLabel(fromDate)} – ${formatDatePickerLabel(toDate)}`,
+      label: "Earnings",
+      value:
+        member.totals.totalEarnings !== undefined && member.totals.totalEarnings !== null
+          ? `${getCurrencySymbol(member.totals.currency)} ${member.totals.totalEarnings.toFixed(2)}`
+          : "—",
+      hint:
+        member.totals.totalEarnings !== undefined && member.totals.totalEarnings !== null
+          ? `Based on worked hours & rate (${member.totals.currency || "USD"})`
+          : "No active position rate",
       icon: CalendarDays,
       iconClassName: "bg-primary/10 text-primary",
     },

@@ -15,6 +15,13 @@ import {
   getTeamMemberDetails,
 } from "@/lib/server/services/team-member.service";
 import { cn } from "@/lib/utils";
+import {
+  getActiveMemberPosition,
+  getMemberPositionHistory,
+} from "@/lib/server/services/member-position.service";
+import { getOrganizationPositions } from "@/lib/server/services/position.service";
+import type { MemberPositionHistory } from "@/types/member-position";
+import type { Position } from "@/types/position";
 import type { TeamMemberDayOff } from "@/types/team-member-day-off";
 import type { TeamMemberDetails } from "@/types/team-member-details";
 
@@ -30,8 +37,13 @@ interface TeamMemberPageProps {
 function resolveDefaultTab(
   tab: string | undefined,
   shiftId: string | undefined
-): "work-summary" | "schedule" | "day-offs" {
-  if (tab === "work-summary" || tab === "schedule" || tab === "day-offs") {
+): "work-summary" | "schedule" | "day-offs" | "position-history" {
+  if (
+    tab === "work-summary" ||
+    tab === "schedule" ||
+    tab === "day-offs" ||
+    tab === "position-history"
+  ) {
     return tab;
   }
 
@@ -54,6 +66,9 @@ export default async function TeamMemberPage({
 
   let details: TeamMemberDetails | null = null;
   let dayOffs: TeamMemberDayOff[] = [];
+  let positions: Position[] = [];
+  let activePosition: MemberPositionHistory | null = null;
+  let positionHistory: MemberPositionHistory[] = [];
   let error: string | null = null;
 
   try {
@@ -64,6 +79,17 @@ export default async function TeamMemberPage({
 
     details = loadedDetails;
     dayOffs = loadedDayOffs;
+
+    if (details) {
+      const [orgPositions, activePos, posHistory] = await Promise.all([
+        getOrganizationPositions(details.organizationId),
+        getActiveMemberPosition(details.teamMember.organizationMember.id),
+        getMemberPositionHistory(details.teamMember.organizationMember.id),
+      ]);
+      positions = orgPositions;
+      activePosition = activePos;
+      positionHistory = posHistory;
+    }
   } catch (err) {
     if (err instanceof BackendApiError) {
       error = err.message;
@@ -112,6 +138,9 @@ export default async function TeamMemberPage({
             defaultTab={defaultTab}
             details={details}
             dayOffs={dayOffs}
+            positions={positions}
+            activePosition={activePosition}
+            positionHistory={positionHistory}
           />
         ) : null}
       </div>

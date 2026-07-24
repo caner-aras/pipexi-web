@@ -27,7 +27,11 @@ export function BrandLogo({
       width={160}
       height={40}
       priority={priority}
-      className={cn(SIZE_CLASS[size], "object-contain object-left", className)}
+      className={cn(
+        SIZE_CLASS[size],
+        "object-contain object-left dark:invert dark:hue-rotate-180",
+        className
+      )}
     />
   );
 }

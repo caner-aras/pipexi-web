@@ -55,6 +55,7 @@ export async function PUT(
       name?: string;
       slug?: string;
       timezone?: string;
+      currency?: string;
     };
 
     if (!body.name?.trim() || !body.slug?.trim() || !body.timezone?.trim()) {
@@ -68,6 +69,7 @@ export async function PUT(
       name: body.name.trim(),
       slug: body.slug.trim(),
       timezone: body.timezone.trim(),
+      currency: body.currency?.trim() || "USD",
     });
 
     return NextResponse.json({ data: organization });

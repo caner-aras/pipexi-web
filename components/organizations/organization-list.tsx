@@ -180,6 +180,7 @@ export function OrganizationList({
                   </button>
                 </TableHead>
                 <TableHead className="w-40">Slug</TableHead>
+                <TableHead className="w-28">Currency</TableHead>
                 <TableHead className="w-36">Timezone</TableHead>
                 <TableHead className="w-32">Status</TableHead>
                 <TableHead className="text-right w-24">Actions</TableHead>
@@ -200,6 +201,9 @@ export function OrganizationList({
                   </TableCell>
                   <TableCell className="font-mono text-xs text-muted-foreground w-40">
                     {organization.slug}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs w-28">
+                    {organization.currency ?? "USD"}
                   </TableCell>
                   <TableCell className="w-36">{organization.timezone}</TableCell>
                   <TableCell className="w-32 text-center">

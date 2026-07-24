@@ -33,6 +33,18 @@ import {
 } from "@/lib/date-format";
 import { formatRecordStatusLabel } from "@/lib/record-status";
 import { getShiftMemberDisplayName } from "@/lib/shift-format";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { MemberPositionAssignDialog } from "@/components/team-members/member-position-assign-dialog";
+import type { MemberPositionHistory } from "@/types/member-position";
+import type { Position } from "@/types/position";
 import type { TeamMemberDayOff } from "@/types/team-member-day-off";
 import type { TeamMemberDetails } from "@/types/team-member-details";
 
@@ -40,9 +52,12 @@ interface TeamMemberDetailsViewProps {
   teamMemberId: string;
   fromDateKey: string;
   focusShiftId?: string | null;
-  defaultTab?: "work-summary" | "schedule" | "day-offs";
+  defaultTab?: "work-summary" | "schedule" | "day-offs" | "position-history";
   details: TeamMemberDetails;
   dayOffs: TeamMemberDayOff[];
+  positions?: Position[];
+  activePosition?: MemberPositionHistory | null;
+  positionHistory?: MemberPositionHistory[];
 }
 
 function getMemberInitials(name: string): string {
@@ -198,9 +213,13 @@ export function TeamMemberDetailsView({
   defaultTab = "work-summary",
   details,
   dayOffs,
+  positions = [],
+  activePosition = null,
+  positionHistory = [],
 }: TeamMemberDetailsViewProps) {
   const router = useRouter();
   const [organizationDrawerOpen, setOrganizationDrawerOpen] = useState(false);
+  const [assignPositionOpen, setAssignPositionOpen] = useState(false);
   const { teamMember, shifts, timeEntries, totalTaskCount, organizationId, organizationName } =
     details;
   const memberName = getShiftMemberDisplayName(teamMember.organizationMember);
@@ -215,6 +234,9 @@ export function TeamMemberDetailsView({
   const orgMemberUpdatedAt = teamMember.organizationMember.updatedAt;
   const teamMemberUpdatedAt = teamMember.updatedAt;
   const lastUpdatedAt = orgMemberUpdatedAt ?? teamMemberUpdatedAt;
+
+  const currentPosition = positions.find((p) => p.id === activePosition?.positionId);
+  const positionTitle = currentPosition?.title;
 
   function handleFromDateChange(value: string) {
     if (!value) {
@@ -253,21 +275,34 @@ export function TeamMemberDetailsView({
                     <TeamMemberTasksPanel memberName={memberName} />
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <OrganizationDetailsTrigger
                       organizationId={organizationId}
                       organizationName={organizationName}
                     />
-                    {teamMember.organizationMember.jobTitle ? (
-                      <Badge variant="outline">
-                        <Briefcase />
+                    {positionTitle ? (
+                      <Badge variant="secondary" className="gap-1 font-medium">
+                        <Briefcase className="size-3.5" />
+                        {positionTitle}
+                      </Badge>
+                    ) : teamMember.organizationMember.jobTitle ? (
+                      <Badge variant="outline" className="gap-1">
+                        <Briefcase className="size-3.5" />
                         {teamMember.organizationMember.jobTitle}
                       </Badge>
                     ) : null}
-                    <Badge variant="outline">
-                      <Users />
+                    <Badge variant="outline" className="gap-1">
+                      <Users className="size-3.5" />
                       {teamMember.team.name}
                     </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={() => setAssignPositionOpen(true)}
+                    >
+                      {activePosition ? "Change Position" : "Assign Position"}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -281,7 +316,17 @@ export function TeamMemberDetailsView({
                   {memberPhone ? (
                     <MemberInfoItem label="Phone" value={memberPhone} />
                   ) : null}
-                  {teamMember.organizationMember.jobTitle ? (
+                  {positionTitle ? (
+                    <MemberInfoItem
+                      label="Position"
+                      value={positionTitle}
+                      hint={
+                        activePosition
+                          ? `${activePosition.hourlyRate.toFixed(2)}/hr`
+                          : undefined
+                      }
+                    />
+                  ) : teamMember.organizationMember.jobTitle ? (
                     <MemberInfoItem
                       label="Job title"
                       value={teamMember.organizationMember.jobTitle}
@@ -404,6 +449,9 @@ export function TeamMemberDetailsView({
           <TabsTrigger value="day-offs" className="flex-none px-3">
             Day offs
           </TabsTrigger>
+          <TabsTrigger value="position-history" className="flex-none px-3">
+            Position history
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="work-summary" keepMounted>
@@ -428,12 +476,96 @@ export function TeamMemberDetailsView({
             dayOffs={dayOffs}
           />
         </TabsContent>
+
+        <TabsContent value="position-history" className="min-h-[20rem]">
+          <Card className="rounded-sm shadow-none">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between gap-4 pb-4">
+                <div>
+                  <h4 className="text-base font-semibold">Position History</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Historical record of assigned positions and hourly rates for this member.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setAssignPositionOpen(true)}
+                >
+                  <Briefcase className="mr-1.5 size-4" />
+                  {activePosition ? "Change Position" : "Assign Position"}
+                </Button>
+              </div>
+
+              {positionHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-sm bg-muted/30 py-12 text-center">
+                  <Briefcase className="size-8 text-muted-foreground/60" />
+                  <p className="mt-3 text-sm font-medium">No position assigned yet</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Assign a position to track hourly rates and roles over time.
+                  </p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Position</TableHead>
+                      <TableHead>Hourly Rate</TableHead>
+                      <TableHead>Start Date</TableHead>
+                      <TableHead>End Date</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {positionHistory.map((history) => {
+                      const pos = positions.find((p) => p.id === history.positionId);
+                      const isCurrent = history.id === activePosition?.id || !history.endDate;
+
+                      return (
+                        <TableRow key={history.id}>
+                          <TableCell className="font-medium">
+                            {pos?.title || "Unknown position"}
+                          </TableCell>
+                          <TableCell>
+                            {history.hourlyRate.toFixed(2)} /hr
+                          </TableCell>
+                          <TableCell>
+                            {formatMemberDate(history.startDate)}
+                          </TableCell>
+                          <TableCell>
+                            {history.endDate ? formatMemberDate(history.endDate) : "Current"}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={isCurrent ? "secondary" : "outline"}
+                              className="text-xs"
+                            >
+                              {isCurrent ? "Active" : "Past"}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       <OrganizationDetailsDrawer
         organizationId={organizationId}
         open={organizationDrawerOpen}
         onOpenChange={setOrganizationDrawerOpen}
+      />
+
+      <MemberPositionAssignDialog
+        open={assignPositionOpen}
+        onOpenChange={setAssignPositionOpen}
+        organizationId={organizationId}
+        organizationMemberId={teamMember.organizationMember.id}
+        positions={positions}
+        activePosition={activePosition}
       />
     </div>
   );

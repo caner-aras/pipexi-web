@@ -16,6 +16,7 @@ export interface Organization {
   name: string;
   slug: string;
   timezone: string;
+  currency: string;
   status: string;
   createdAt: string;
   updatedAt: string | null;

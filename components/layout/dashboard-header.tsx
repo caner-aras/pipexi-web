@@ -8,6 +8,7 @@ import { DashboardBreadcrumb } from "@/components/layout/dashboard-breadcrumb";
 import { NotificationsHeaderAction } from "@/components/layout/notifications-header-action";
 import { OrganizationSwitcher } from "@/components/layout/organization-switcher";
 import { OrganizationTasksHeaderAction } from "@/components/tasks/organization-tasks-header-action";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -42,6 +43,7 @@ export function DashboardHeader({ organizationsError }: DashboardHeaderProps) {
         <NotificationsHeaderAction />
         <OrganizationTasksHeaderAction />
         <OrganizationSwitcher error={organizationsError} />
+        <ThemeToggle />
         <Button
           variant="outline"
           size="default"

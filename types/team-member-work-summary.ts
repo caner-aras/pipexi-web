@@ -53,6 +53,8 @@ export interface WorkSummaryTotals {
   totalShiftDurationText: string;
   totalBreakDurationText: string;
   totalWorkedDurationText: string;
+  totalEarnings?: number | null;
+  currency?: string;
 }
 
 export interface WorkSummaryMember {
