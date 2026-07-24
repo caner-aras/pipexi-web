@@ -27,7 +27,7 @@ export function CollaborationMockup({
       )}
     >
       {/* Search/Doc Bar Mockup */}
-      <div className="h-12 w-full bg-emerald-600 rounded-2xl flex items-center px-4 gap-3 shadow-md shadow-emerald-600/20">
+      <div className="h-12 w-full bg-emerald-600 rounded-full flex items-center px-4 gap-3 shadow-md shadow-emerald-600/20">
         <FileText className="size-5 text-white/90" />
         <span className="text-xs font-bold text-white/90 tracking-wide">{wikiTitle}</span>
       </div>

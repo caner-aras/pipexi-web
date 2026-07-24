@@ -26,15 +26,15 @@ export function LandingIntegrations() {
           { name: "LinkedIn", src: "/assets/landing/integrations/linkedin.png", aspect: "w-24 h-6" },
           { name: "Microsoft Azure", src: "/assets/landing/integrations/azure.png", aspect: "w-45 h-45" },
         ].map((tool, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="h-20 w-48 rounded-3xl bg-white border border-zinc-100 flex items-center justify-center p-4 hover:bg-zinc-50/80 hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer"
           >
             <div className={cn("relative w-full h-full flex items-center justify-center")}>
               <div className={cn("relative", tool.aspect)}>
-                <Image 
-                  src={tool.src} 
-                  alt={`${tool.name} logo`} 
+                <Image
+                  src={tool.src}
+                  alt={`${tool.name} logo`}
                   fill
                   sizes="(max-width: 768px) 100px, 150px"
                   className="object-contain"

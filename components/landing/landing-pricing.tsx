@@ -97,7 +97,7 @@ export function LandingPricing({ displayName }: LandingPricingProps) {
               <Link
                 href={displayName ? "/dashboard" : "/register"}
                 className={cn(
-                  "mt-10 inline-flex h-14 items-center justify-center rounded-2xl px-6 text-base font-bold transition-all w-full",
+                  "mt-10 inline-flex h-14 items-center justify-center rounded-full px-6 text-base font-bold transition-all w-full",
                   plan.featured
                     ? "bg-zinc-900 text-white hover:bg-zinc-800 hover:shadow-lg"
                     : "bg-zinc-100 text-zinc-900 hover:bg-zinc-200"

@@ -21,13 +21,13 @@ export function LandingCta({ displayName }: LandingCtaProps) {
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href={displayName ? "/dashboard" : "/login"}
-              className="inline-flex h-14 items-center justify-center rounded-2xl bg-[#e86a3d] px-8 text-base font-bold text-white transition-all hover:bg-[#d05c31] hover:scale-105 w-full sm:w-auto shadow-[0_0_40px_rgba(232,106,61,0.3)]"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-[#e86a3d] px-8 text-base font-bold text-white transition-all hover:bg-[#d05c31] hover:scale-105 w-full sm:w-auto shadow-[0_0_40px_rgba(232,106,61,0.3)]"
             >
               Create your workspace
             </Link>
             <Link
               href="/login"
-              className="inline-flex h-14 items-center justify-center rounded-2xl bg-white/10 px-8 text-base font-bold text-white transition-all hover:bg-white/20 w-full sm:w-auto backdrop-blur-md"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-white/10 px-8 text-base font-bold text-white transition-all hover:bg-white/20 w-full sm:w-auto backdrop-blur-md"
             >
               Log in
             </Link>
