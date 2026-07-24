@@ -387,51 +387,53 @@ export function TeamMemberDetailsView({
               />
             </div>
 
-            <div className="flex flex-col border-t border-border/50 bg-background xl:w-72 xl:border-t-0 xl:border-l">
-              <div className="border-b border-border/50 px-5 py-4 sm:px-6">
-                <p className="text-sm font-medium">Schedule range</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {rangeLabel} · 7-day window
-                </p>
-                <div className="mt-3">
-                  <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    From date
+            <div className="rounded-md border border-border/50 bg-background p-4 sm:p-5 mr-3">
+              <div className="flex flex-col xl:w-72">
+                <div className="border-b border-border/50 pb-4">
+                  <p className="text-sm font-medium">Schedule range</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {rangeLabel} · 7-day window
                   </p>
-                  <DatePicker
-                    value={fromDateKey}
-                    onChange={handleFromDateChange}
-                    showIcon
-                    buttonClassName="bg-background"
+                  <div className="mt-3">
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      From date
+                    </p>
+                    <DatePicker
+                      value={fromDateKey}
+                      onChange={handleFromDateChange}
+                      showIcon
+                      buttonClassName="bg-background"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 divide-x divide-border/30 xl:grid-cols-1 xl:divide-x-0 xl:divide-y">
+                  <MemberStat
+                    icon={CalendarDays}
+                    label="Shifts"
+                    value={shifts.length}
+                    hint="In selected range"
+                  />
+                  <MemberStat
+                    icon={Clock3}
+                    label="Time entries"
+                    value={timeEntries.length}
+                    hint="In selected range"
+                  />
+                  <MemberStat
+                    icon={CheckSquare}
+                    label="Tasks"
+                    value={totalTaskCount}
+                    hint="Assigned to member"
+                    href={`/team-members/${teamMemberId}/tasks`}
+                  />
+                  <MemberStat
+                    icon={CalendarOff}
+                    label="Day offs"
+                    value={dayOffs.length}
+                    hint="In selected window"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 divide-x divide-border/30 xl:grid-cols-1 xl:divide-x-0 xl:divide-y">
-                <MemberStat
-                  icon={CalendarDays}
-                  label="Shifts"
-                  value={shifts.length}
-                  hint="In selected range"
-                />
-                <MemberStat
-                  icon={Clock3}
-                  label="Time entries"
-                  value={timeEntries.length}
-                  hint="In selected range"
-                />
-                <MemberStat
-                  icon={CheckSquare}
-                  label="Tasks"
-                  value={totalTaskCount}
-                  hint="Assigned to member"
-                  href={`/team-members/${teamMemberId}/tasks`}
-                />
-                <MemberStat
-                  icon={CalendarOff}
-                  label="Day offs"
-                  value={dayOffs.length}
-                  hint="In selected window"
-                />
               </div>
             </div>
           </div>
