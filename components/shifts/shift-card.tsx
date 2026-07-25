@@ -244,12 +244,6 @@ export function ShiftCard({
                   <span className="font-medium text-foreground hover:underline">
                     {memberName}
                   </span>
-                  {memberEmail ? (
-                    <span className="text-muted-foreground">
-                      {" "}
-                      · {memberEmail}
-                    </span>
-                  ) : null}
                 </Link>
               ) : (
                 <span>
@@ -469,6 +463,13 @@ export function ShiftStats({ stats }: ShiftStatsProps) {
   );
 }
 
+function getMemberInitials(name: string): string {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
 interface ShiftDayGroupProps {
   dateKey: string;
   dateLabel: string;
@@ -490,9 +491,22 @@ export function ShiftDayGroup({
   onLogTimeEntry,
   className,
 }: ShiftDayGroupProps) {
+  const [selectedShiftId, setSelectedShiftId] = useState<string | null>(null);
+
+  const activeShiftId = useMemo(() => {
+    if (selectedShiftId && shifts.some((s) => s.id === selectedShiftId)) {
+      return selectedShiftId;
+    }
+    return shifts[0]?.id || null;
+  }, [shifts, selectedShiftId]);
+
+  const activeShifts = useMemo(() => {
+    return shifts.filter((s) => s.id === activeShiftId);
+  }, [shifts, activeShiftId]);
+
   const timelineRange = useMemo(
-    () => computeShiftDayTimelineRange(shifts, dateKey),
-    [shifts, dateKey]
+    () => computeShiftDayTimelineRange(activeShifts, dateKey),
+    [activeShifts, dateKey]
   );
 
   const [shiftHeights, setShiftHeights] = useState<Record<string, number>>({});
@@ -559,15 +573,15 @@ export function ShiftDayGroup({
 
   const slotLayouts = useMemo(
     () =>
-      computeShiftDaySlotLayouts(shifts, timelineRange, (shift) => {
+      computeShiftDaySlotLayouts(activeShifts, timelineRange, (shift) => {
         return shiftHeights[shift.id] ?? SHIFT_CARD_ESTIMATED_HEIGHT_PX;
       }),
-    [shifts, timelineRange, shiftHeights]
+    [activeShifts, timelineRange, shiftHeights]
   );
 
   const shiftBlocks = useMemo(
-    () => computeShiftTimelineBlocks(shifts, timelineRange),
-    [shifts, timelineRange]
+    () => computeShiftTimelineBlocks(activeShifts, timelineRange),
+    [activeShifts, timelineRange]
   );
 
   const shiftDividerStartIndices = useMemo(
@@ -627,12 +641,54 @@ export function ShiftDayGroup({
       id={`shift-day-${dateKey}`}
       className={cn("scroll-mt-6 flex w-[26rem] shrink-0 flex-col pl-2", className)}
     >
-      <div className="mb-3 flex items-center justify-between gap-3 px-0.5">
-        <h4 className="text-sm font-semibold">{dateLabel}</h4>
-        <Badge variant="outline">{shifts.length} shifts</Badge>
+      <div className="mb-3 flex flex-wrap items-center gap-2 px-0.5 min-h-[2rem]">
+        <h4 className="text-sm font-semibold whitespace-nowrap">{dateLabel}</h4>
+        {shifts.length > 1 && (
+          <div className="flex flex-wrap gap-1">
+            {shifts.map((s) => {
+              const isActive = s.id === activeShiftId;
+              const memberName = s.organizationMember
+                ? getShiftMemberDisplayName(s.organizationMember)
+                : s.title;
+              const initials = getMemberInitials(memberName);
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setSelectedShiftId(s.id)}
+                  type="button"
+                  title={memberName}
+                  className={cn(
+                    "inline-flex items-center justify-center rounded-full h-7 w-7 text-xs font-bold transition-all cursor-pointer shrink-0",
+                    isActive
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 scale-[1.05] z-10"
+                      : "bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  )}
+                >
+                  {initials}
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {shifts.length === 1 && (
+          <span
+            title={
+              shifts[0].organizationMember
+                ? getShiftMemberDisplayName(shifts[0].organizationMember)
+                : shifts[0].title
+            }
+            className="inline-flex items-center justify-center rounded-full bg-muted w-7 h-7 text-[10px] font-bold border border-border/40 text-muted-foreground shrink-0 cursor-default"
+          >
+            {getMemberInitials(
+              shifts[0].organizationMember
+                ? getShiftMemberDisplayName(shifts[0].organizationMember)
+                : shifts[0].title
+            )}
+          </span>
+        )}
       </div>
 
-      {shifts.length === 0 ? (
+      {activeShifts.length === 0 ? (
         <div
           className={cn(
             "rounded-sm border bg-muted/30 p-3",
@@ -651,15 +707,16 @@ export function ShiftDayGroup({
               ? "border-dashed border-destructive"
               : "border-border/50"
           )}
-        >          <div
-          className="grid"
-          style={{
-            gridTemplateColumns: "5.5rem 1fr",
-            gridTemplateRows: slotLayouts
-              .map((slot) => `${slot.heightPx}px`)
-              .join(" "),
-          }}
         >
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: "5.5rem 1fr",
+              gridTemplateRows: slotLayouts
+                .map((slot) => `${slot.heightPx}px`)
+                .join(" "),
+            }}
+          >
             {slotLayouts.map((slot) => (
               <div
                 key={`${slot.minutes}-label`}
