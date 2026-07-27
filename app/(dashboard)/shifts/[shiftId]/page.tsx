@@ -2,49 +2,14 @@ import { notFound } from "next/navigation";
 
 import { ShiftDetailPageContent } from "@/components/shifts/shift-detail-page-content";
 import { PageHeader } from "@/components/layout/page-header";
-import { getTeamMemberLookupKey } from "@/lib/date-format";
 import { BackendApiError } from "@/lib/server/api-client";
-import {
-  getOrganizationTeams,
-  getOrganizationTeamMembers,
-  getOrganizations,
-} from "@/lib/server/services/organization.service";
+import { getOrganizations } from "@/lib/server/services/organization.service";
 import { getShiftById } from "@/lib/server/services/shift.service";
 import { getSelectedOrganization } from "@/lib/server/selected-organization";
 import type { Shift } from "@/types/shift";
-import type { Team } from "@/types/team";
 
 interface ShiftDetailPageProps {
   params: Promise<{ shiftId: string }>;
-}
-
-async function buildTeamMemberLookups(
-  organizationId: string,
-  teams: Team[]
-): Promise<{
-  teamMemberIdByKey: Record<string, string>;
-  teamMemberIdByOrganizationMemberId: Record<string, string>;
-}> {
-  const membersByTeam = await Promise.all(
-    teams.map((team) => getOrganizationTeamMembers(organizationId, team.id))
-  );
-  const teamMemberIdByKey: Record<string, string> = {};
-  const teamMemberIdByOrganizationMemberId: Record<string, string> = {};
-
-  for (const members of membersByTeam) {
-    for (const member of members) {
-      teamMemberIdByKey[
-        getTeamMemberLookupKey(member.teamId, member.organizationMemberId)
-      ] = member.id;
-
-      if (!teamMemberIdByOrganizationMemberId[member.organizationMemberId]) {
-        teamMemberIdByOrganizationMemberId[member.organizationMemberId] =
-          member.id;
-      }
-    }
-  }
-
-  return { teamMemberIdByKey, teamMemberIdByOrganizationMemberId };
 }
 
 export default async function ShiftDetailPage({ params }: ShiftDetailPageProps) {
@@ -52,8 +17,6 @@ export default async function ShiftDetailPage({ params }: ShiftDetailPageProps) 
   let shift: Shift | null = null;
   let error: string | null = null;
   let noOrganization = false;
-  let teamMemberIdByKey: Record<string, string> = {};
-  let teamMemberIdByOrganizationMemberId: Record<string, string> = {};
   let organizationId: string | null = null;
 
   try {
@@ -72,18 +35,6 @@ export default async function ShiftDetailPage({ params }: ShiftDetailPageProps) 
       }
 
       shift = loadedShift;
-
-      const teams = await getOrganizationTeams(selectedOrganization.id);
-
-      if (teams.length > 0) {
-        const lookups = await buildTeamMemberLookups(
-          selectedOrganization.id,
-          teams
-        );
-        teamMemberIdByKey = lookups.teamMemberIdByKey;
-        teamMemberIdByOrganizationMemberId =
-          lookups.teamMemberIdByOrganizationMemberId;
-      }
     }
   } catch (err) {
     if (err instanceof BackendApiError) {
@@ -126,8 +77,6 @@ export default async function ShiftDetailPage({ params }: ShiftDetailPageProps) 
       <ShiftDetailPageContent
         organizationId={organizationId}
         shift={shift}
-        teamMemberIdByKey={teamMemberIdByKey}
-        teamMemberIdByOrganizationMemberId={teamMemberIdByOrganizationMemberId}
         error={error}
       />
     </div>

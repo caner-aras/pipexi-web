@@ -9,6 +9,10 @@ export function resolveShiftTeamMemberId(
     teamMemberIdByOrganizationMemberId?: Record<string, string>;
   } = {}
 ): string | null {
+  if (shift.teamMemberId) {
+    return shift.teamMemberId;
+  }
+
   const teamMemberLookupKey = getShiftTeamMemberLookupKey(shift);
 
   if (teamMemberLookupKey && lookups.teamMemberIdByKey?.[teamMemberLookupKey]) {

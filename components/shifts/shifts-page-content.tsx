@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { ShiftCreateDialog } from "@/components/shifts/shift-create-dialog";
 import { ShiftsView } from "@/components/shifts/shifts-view";
@@ -59,11 +59,6 @@ export function ShiftsPageContent({
   >([]);
   const [shiftFormsLoading, setShiftFormsLoading] = useState(false);
   const [shiftFormsError, setShiftFormsError] = useState<string | null>(null);
-  const [teamMemberIdByKey, setTeamMemberIdByKey] = useState<
-    Record<string, string>
-  >({});
-  const [teamMemberIdByOrganizationMemberId, setTeamMemberIdByOrganizationMemberId] =
-    useState<Record<string, string>>({});
 
   const loadShifts = useCallback(
     async (nextFromDateKey: string) => {
@@ -136,41 +131,6 @@ export function ShiftsPageContent({
       setCreateOptionsLoading(false);
     }
   }, [createOptions, createOptionsLoading, organizationId]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadTeamMemberLookups() {
-      try {
-        const response = await fetch(
-          `/api/organizations/${organizationId}/team-member-lookups`
-        );
-        const body = (await response.json()) as {
-          data?: {
-            teamMemberIdByKey: Record<string, string>;
-            teamMemberIdByOrganizationMemberId: Record<string, string>;
-          };
-        };
-
-        if (!response.ok || !body.data || cancelled) {
-          return;
-        }
-
-        setTeamMemberIdByKey(body.data.teamMemberIdByKey);
-        setTeamMemberIdByOrganizationMemberId(
-          body.data.teamMemberIdByOrganizationMemberId
-        );
-      } catch {
-        // Member profile links are optional; ignore background lookup failures.
-      }
-    }
-
-    void loadTeamMemberLookups();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [organizationId]);
 
   function handleFromDateChange(nextFromDateKey: string) {
     setFromDateKey(nextFromDateKey);
@@ -262,10 +222,6 @@ export function ShiftsPageContent({
             fromDateKey={fromDateKey}
             onFromDateChange={handleFromDateChange}
             isLoading={shiftsLoading}
-            teamMemberIdByKey={teamMemberIdByKey}
-            teamMemberIdByOrganizationMemberId={
-              teamMemberIdByOrganizationMemberId
-            }
             onLogTimeEntry={handleLogTimeEntry}
           />
         ) : null}

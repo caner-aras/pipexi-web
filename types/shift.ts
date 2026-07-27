@@ -64,6 +64,7 @@ export interface ShiftApi {
   team: Team | null;
   organizationMemberId: string | null;
   organizationMember: OrganizationMember | null;
+  teamMemberId?: string | null;
   locationId: string;
   title: string;
   startAt: string;
