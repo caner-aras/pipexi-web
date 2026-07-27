@@ -37,7 +37,6 @@ import {
 } from "@/lib/shift-format";
 import {
   buildTeamMemberDetailsHref,
-  resolveShiftTeamMemberId,
 } from "@/lib/team-member-navigation";
 import {
   computeShiftDaySlotLayouts,
@@ -52,9 +51,6 @@ import type { Shift, ShiftBreak } from "@/types/shift";
 
 interface ShiftCardProps {
   shift: Shift;
-  teamMemberId?: string | null;
-  teamMemberIdByKey?: Record<string, string>;
-  teamMemberIdByOrganizationMemberId?: Record<string, string>;
   className?: string;
   onLogTimeEntry?: (shift: Shift) => void;
   onEditShiftBreak?: (breakItem: ShiftBreak) => void;
@@ -125,9 +121,6 @@ function ShiftTimeline({
 
 export function ShiftCard({
   shift,
-  teamMemberId,
-  teamMemberIdByKey,
-  teamMemberIdByOrganizationMemberId,
   className,
   onLogTimeEntry,
   onEditShiftBreak,
@@ -141,15 +134,9 @@ export function ShiftCard({
   const member = shift.organizationMember;
   const memberName = member ? getShiftMemberDisplayName(member) : null;
   const memberEmail = member?.user?.email ?? null;
-  const resolvedTeamMemberId =
-    teamMemberId ??
-    resolveShiftTeamMemberId(shift, {
-      teamMemberIdByKey,
-      teamMemberIdByOrganizationMemberId,
-    });
   const memberHref =
-    member && resolvedTeamMemberId
-      ? buildTeamMemberDetailsHref(resolvedTeamMemberId, shift)
+    member && shift.teamMemberId
+      ? buildTeamMemberDetailsHref(shift.teamMemberId, shift)
       : null;
   const canLogTimeEntry =
     Boolean(onLogTimeEntry) && shift.timeEntries.length === 0;
@@ -475,8 +462,6 @@ interface ShiftDayGroupProps {
   dateLabel: string;
   todayKey: string;
   shifts: Shift[];
-  teamMemberIdByKey?: Record<string, string>;
-  teamMemberIdByOrganizationMemberId?: Record<string, string>;
   onLogTimeEntry?: (shift: Shift) => void;
   className?: string;
 }
@@ -486,8 +471,6 @@ export function ShiftDayGroup({
   dateLabel,
   todayKey,
   shifts,
-  teamMemberIdByKey,
-  teamMemberIdByOrganizationMemberId,
   onLogTimeEntry,
   className,
 }: ShiftDayGroupProps) {
@@ -796,10 +779,6 @@ export function ShiftDayGroup({
                       <ShiftCard
                         shift={shift}
                         className={cn(fillsEntireTimeline && "h-full")}
-                        teamMemberIdByKey={teamMemberIdByKey}
-                        teamMemberIdByOrganizationMemberId={
-                          teamMemberIdByOrganizationMemberId
-                        }
                         onLogTimeEntry={onLogTimeEntry}
                       />
                     </div>

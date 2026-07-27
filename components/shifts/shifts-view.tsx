@@ -110,8 +110,6 @@ interface ShiftsViewProps {
   fromDateKey: string;
   onFromDateChange: (fromDateKey: string) => void;
   isLoading?: boolean;
-  teamMemberIdByKey?: Record<string, string>;
-  teamMemberIdByOrganizationMemberId?: Record<string, string>;
   onLogTimeEntry?: (shift: Shift) => void;
 }
 
@@ -121,8 +119,6 @@ export function ShiftsView({
   fromDateKey,
   onFromDateChange,
   isLoading = false,
-  teamMemberIdByKey,
-  teamMemberIdByOrganizationMemberId,
   onLogTimeEntry,
 }: ShiftsViewProps) {
   const boardScrollRef = useRef<HTMLDivElement>(null);
@@ -366,10 +362,6 @@ export function ShiftsView({
                   dateLabel={formatShiftDateLabel(dateKey)}
                   todayKey={todayKey}
                   shifts={groupedShifts.get(dateKey) ?? []}
-                  teamMemberIdByKey={teamMemberIdByKey}
-                  teamMemberIdByOrganizationMemberId={
-                    teamMemberIdByOrganizationMemberId
-                  }
                   onLogTimeEntry={onLogTimeEntry}
                 />
               ))}

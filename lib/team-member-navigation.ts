@@ -1,32 +1,6 @@
 import { getTodayDateKeyUtc } from "@/lib/date-format";
-import { getShiftDateKey, getShiftTeamMemberLookupKey } from "@/lib/shift-format";
+import { getShiftDateKey } from "@/lib/shift-format";
 import type { Shift } from "@/types/shift";
-
-export function resolveShiftTeamMemberId(
-  shift: Shift,
-  lookups: {
-    teamMemberIdByKey?: Record<string, string>;
-    teamMemberIdByOrganizationMemberId?: Record<string, string>;
-  } = {}
-): string | null {
-  if (shift.teamMemberId) {
-    return shift.teamMemberId;
-  }
-
-  const teamMemberLookupKey = getShiftTeamMemberLookupKey(shift);
-
-  if (teamMemberLookupKey && lookups.teamMemberIdByKey?.[teamMemberLookupKey]) {
-    return lookups.teamMemberIdByKey[teamMemberLookupKey];
-  }
-
-  return (
-    (shift.organizationMemberId
-      ? lookups.teamMemberIdByOrganizationMemberId?.[
-          shift.organizationMemberId
-        ]
-      : null) ?? null
-  );
-}
 
 export function buildTeamMemberProfileHref(
   teamMemberId: string,

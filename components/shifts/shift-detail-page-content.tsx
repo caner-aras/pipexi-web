@@ -64,8 +64,6 @@ import type { TimeEntry, TimeEntryBreak } from "@/types/time-entry";
 interface ShiftDetailPageContentProps {
   organizationId: string;
   shift: Shift;
-  teamMemberIdByKey?: Record<string, string>;
-  teamMemberIdByOrganizationMemberId?: Record<string, string>;
   error: string | null;
 }
 
@@ -401,8 +399,6 @@ function ShiftTimeEntriesPanel({
 export function ShiftDetailPageContent({
   organizationId,
   shift,
-  teamMemberIdByKey,
-  teamMemberIdByOrganizationMemberId,
   error,
 }: ShiftDetailPageContentProps) {
   const router = useRouter();
@@ -691,10 +687,6 @@ export function ShiftDetailPageContent({
         <div className="space-y-6 rounded-sm border border-border/50">
           <ShiftCard
             shift={shift}
-            teamMemberIdByKey={teamMemberIdByKey}
-            teamMemberIdByOrganizationMemberId={
-              teamMemberIdByOrganizationMemberId
-            }
             showDetailLink={false}
             onLogTimeEntry={
               isReadOnly ? undefined : () => handleLogTimeEntry()
