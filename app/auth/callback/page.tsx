@@ -1,61 +1,84 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (!hash) {
-      router.push("/login");
-      return;
-    }
+    let cancelled = false;
 
-    const params = new URLSearchParams(hash.substring(1)); // remove '#'
-    const accessToken = params.get("access_token");
+    const run = async () => {
+      // Defer so setState is not synchronous inside the effect body.
+      await Promise.resolve();
+      if (cancelled) {
+        return;
+      }
 
-    if (!accessToken) {
-      setError("No access token found in auth response.");
-      return;
-    }
+      const hash = window.location.hash;
+      if (!hash) {
+        router.push("/login");
+        return;
+      }
 
-    async function handleAuth() {
-      if (!accessToken) return;
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+      const expiresInRaw = params.get("expires_in");
+      const expiresIn = expiresInRaw ? Number(expiresInRaw) : null;
+
+      if (!accessToken) {
+        setError("No access token found in auth response.");
+        return;
+      }
+
       try {
-        // 1. Set session cookie on Next.js server
         const sessionRes = await fetch("/api/auth/session", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ accessToken }),
+          body: JSON.stringify({
+            accessToken,
+            refreshToken,
+            expiresIn: Number.isFinite(expiresIn) ? expiresIn : null,
+          }),
         });
 
         if (!sessionRes.ok) {
           throw new Error("Failed to set session cookie.");
         }
 
-        // 2. Extract metadata from JWT payload
         const payloadBase64 = accessToken.split(".")[1];
         if (!payloadBase64) {
           throw new Error("Invalid JWT token format.");
         }
-        
-        // Decode base64url
-        const decodedPayload = atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"));
-        const payloadJson = JSON.parse(decodedPayload);
+
+        const decodedPayload = atob(
+          payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
+        );
+        const payloadJson = JSON.parse(decodedPayload) as {
+          email?: string;
+          phone?: string | null;
+          user_metadata?: {
+            full_name?: string;
+            given_name?: string;
+            family_name?: string;
+            avatar_url?: string | null;
+          };
+        };
         const userMetadata = payloadJson.user_metadata || {};
-        
+
         const fullName = userMetadata.full_name || "";
         const nameParts = fullName.trim().split(/\s+/);
-        const firstName = userMetadata.given_name || nameParts[0] || "Google User";
-        const lastName = userMetadata.family_name || nameParts.slice(1).join(" ") || "";
+        const firstName =
+          userMetadata.given_name || nameParts[0] || "Google User";
+        const lastName =
+          userMetadata.family_name || nameParts.slice(1).join(" ") || "";
 
-        // 3. Call C# backend profile sync endpoint via Next.js proxy
         const syncRes = await fetch("/api/auth/sync", {
           method: "POST",
           headers: {
@@ -74,15 +97,25 @@ export default function AuthCallbackPage() {
           throw new Error("Failed to sync profile with backend.");
         }
 
-        // 4. Redirect to dashboard
+        if (cancelled) {
+          return;
+        }
+
         router.push("/dashboard");
         router.refresh();
-      } catch (err: any) {
-        setError(err.message || "Authentication failed.");
+      } catch (err: unknown) {
+        if (cancelled) {
+          return;
+        }
+        setError(err instanceof Error ? err.message : "Authentication failed.");
       }
-    }
+    };
 
-    handleAuth();
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (error) {

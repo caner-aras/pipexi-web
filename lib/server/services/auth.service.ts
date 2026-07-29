@@ -1,7 +1,13 @@
 import "server-only";
 
 import { backendFetch } from "@/lib/server/api-client";
-import type { AuthUser, LoginCredentials, LoginTokenData, RegisterCredentials, RegisterResponse } from "@/types/auth";
+import type {
+  AuthUser,
+  LoginCredentials,
+  LoginTokenData,
+  RegisterCredentials,
+  RegisterResponse,
+} from "@/types/auth";
 
 export async function loginWithBackend(
   credentials: LoginCredentials
@@ -9,6 +15,16 @@ export async function loginWithBackend(
   return backendFetch<LoginTokenData>("/auth/token", {
     method: "POST",
     body: JSON.stringify(credentials),
+    skipAuth: true,
+  });
+}
+
+export async function refreshWithBackend(
+  refreshToken: string
+): Promise<LoginTokenData> {
+  return backendFetch<LoginTokenData>("/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refresh_token: refreshToken }),
     skipAuth: true,
   });
 }

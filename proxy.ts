@@ -1,16 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { ACCESS_TOKEN_COOKIE } from "@/types/auth";
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/types/auth";
 
 const LOGIN_PATH = "/login";
 const REGISTER_PATH = "/register";
 const FORGOT_PASSWORD_PATH = "/forgot-password";
-const CALLBACK_PATH = "/auth/callback";
 const DASHBOARD_PATH = "/dashboard";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthenticated = !!request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  const hasAccessToken = !!request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  const hasRefreshToken = !!request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+  const isAuthenticated = hasAccessToken || hasRefreshToken;
 
   if (pathname.startsWith("/api") || pathname.startsWith("/auth")) {
     return NextResponse.next();

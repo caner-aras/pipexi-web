@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 const LOGOUT_PATH = "/api/auth/logout";
 const LOGIN_PATH = "/api/auth/login";
+const REFRESH_PATH = "/api/auth/refresh";
 const ME_PATH = "/api/auth/me";
 
 function shouldHandleUnauthorized(input: RequestInfo | URL): boolean {
@@ -24,7 +25,8 @@ function shouldHandleUnauthorized(input: RequestInfo | URL): boolean {
   return (
     path.startsWith("/api/") &&
     !path.startsWith(LOGIN_PATH) &&
-    !path.startsWith(LOGOUT_PATH)
+    !path.startsWith(LOGOUT_PATH) &&
+    !path.startsWith(REFRESH_PATH)
   );
 }
 
@@ -34,6 +36,7 @@ export function UnauthorizedHandler() {
   useEffect(() => {
     const originalFetch = window.fetch.bind(window);
     let isRedirecting = false;
+    let refreshPromise: Promise<boolean> | null = null;
 
     const logout = () => {
       if (isRedirecting) {
@@ -44,14 +47,36 @@ export function UnauthorizedHandler() {
       window.location.assign(LOGOUT_PATH);
     };
 
+    const ensureRefreshed = () => {
+      if (!refreshPromise) {
+        refreshPromise = originalFetch(REFRESH_PATH, {
+          method: "POST",
+          cache: "no-store",
+        })
+          .then((response) => response.ok)
+          .catch(() => false)
+          .finally(() => {
+            refreshPromise = null;
+          });
+      }
+
+      return refreshPromise;
+    };
+
     window.fetch = async (input, init) => {
       const response = await originalFetch(input, init);
 
-      if (response.status === 401 && shouldHandleUnauthorized(input)) {
-        logout();
+      if (response.status !== 401 || !shouldHandleUnauthorized(input)) {
+        return response;
       }
 
-      return response;
+      const refreshed = await ensureRefreshed();
+      if (!refreshed) {
+        logout();
+        return response;
+      }
+
+      return originalFetch(input, init);
     };
 
     return () => {
@@ -70,7 +95,24 @@ export function UnauthorizedHandler() {
         });
 
         if (!cancelled && response.status === 401) {
-          window.location.assign(LOGOUT_PATH);
+          const refreshResponse = await fetch(REFRESH_PATH, {
+            method: "POST",
+            cache: "no-store",
+          });
+
+          if (!refreshResponse.ok) {
+            window.location.assign(LOGOUT_PATH);
+            return;
+          }
+
+          const retry = await fetch(ME_PATH, {
+            method: "GET",
+            cache: "no-store",
+          });
+
+          if (!cancelled && retry.status === 401) {
+            window.location.assign(LOGOUT_PATH);
+          }
         }
       } catch {
         // Network errors should not force logout.

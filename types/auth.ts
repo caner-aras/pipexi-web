@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN_COOKIE = "access_token" as const;
+export const REFRESH_TOKEN_COOKIE = "refresh_token" as const;
 
 export interface LoginCredentials {
   email: string;
@@ -9,6 +10,7 @@ export interface LoginTokenData {
   statusCode: number;
   access_token: string;
   refresh_token: string;
+  expires_in: number;
 }
 
 export interface Organization {
@@ -62,4 +64,5 @@ export interface RegisterResponse {
   email: string;
   access_token?: string | null;
   refresh_token?: string | null;
+  expires_in?: number | null;
 }

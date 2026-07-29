@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/lib/validations/auth";
 import { BackendApiError } from "@/lib/server/api-client";
+import { setAuthCookies } from "@/lib/server/auth-cookies";
 import { registerWithBackend } from "@/lib/server/services/auth.service";
-import { ACCESS_TOKEN_COOKIE } from "@/types/auth";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -23,18 +23,17 @@ export async function POST(request: Request) {
   try {
     const registerData = await registerWithBackend(parsed.data);
 
-    const response = NextResponse.json({ 
-      message: "Registration successful", 
+    const response = NextResponse.json({
+      message: "Registration successful",
       userId: registerData.user_id,
-      email: registerData.email
+      email: registerData.email,
     });
 
     if (registerData.access_token) {
-      response.cookies.set(ACCESS_TOKEN_COOKIE, registerData.access_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
+      setAuthCookies(response.cookies, {
+        accessToken: registerData.access_token,
+        refreshToken: registerData.refresh_token,
+        expiresIn: registerData.expires_in,
       });
     }
 

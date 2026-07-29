@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 
 import { loginSchema } from "@/lib/validations/auth";
 import { BackendApiError } from "@/lib/server/api-client";
+import { setAuthCookies } from "@/lib/server/auth-cookies";
 import { loginWithBackend } from "@/lib/server/services/auth.service";
-import { ACCESS_TOKEN_COOKIE } from "@/types/auth";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -27,11 +27,10 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ message: "Login successful" });
 
-    response.cookies.set(ACCESS_TOKEN_COOKIE, tokenData.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
+    setAuthCookies(response.cookies, {
+      accessToken: tokenData.access_token,
+      refreshToken: tokenData.refresh_token,
+      expiresIn: tokenData.expires_in,
     });
 
     return response;

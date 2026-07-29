@@ -2,7 +2,12 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-import { ACCESS_TOKEN_COOKIE } from "@/types/auth";
+import { setAuthCookies } from "@/lib/server/auth-cookies";
+import {
+  ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+  type LoginTokenData,
+} from "@/types/auth";
 import type { BackendErrorPayload, BackendResponse } from "@/types/api";
 
 export class BackendApiError extends Error {
@@ -68,13 +73,84 @@ function parseErrorMessage(
 
 type BackendFetchOptions = RequestInit & {
   skipAuth?: boolean;
+  _retried?: boolean;
 };
+
+let refreshPromise: Promise<string | null> | null = null;
+
+async function exchangeRefreshToken(refreshToken: string): Promise<LoginTokenData> {
+  const response = await fetch(`${getBackendBaseUrl()}/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+    cache: "no-store",
+  });
+
+  let body: BackendResponse<LoginTokenData>;
+  try {
+    body = (await response.json()) as BackendResponse<LoginTokenData>;
+  } catch {
+    throw new BackendApiError("Invalid refresh response", response.status);
+  }
+
+  const statusCode = body.statusCode ?? response.status;
+  if (!response.ok || !body.isSuccess || !body.data) {
+    throw new BackendApiError(
+      parseErrorMessage(body.error) || "Failed to refresh session",
+      statusCode,
+      body.error
+    );
+  }
+
+  return body.data;
+}
+
+async function refreshSessionAccessToken(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
+  if (!refreshToken) {
+    return null;
+  }
+
+  try {
+    const tokenData = await exchangeRefreshToken(refreshToken);
+
+    try {
+      setAuthCookies(cookieStore, {
+        accessToken: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
+        expiresIn: tokenData.expires_in,
+      });
+    } catch {
+      // Cookie mutation may be unavailable outside route handlers/actions.
+    }
+
+    return tokenData.access_token;
+  } catch {
+    return null;
+  }
+}
+
+function ensureSessionRefreshed(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = refreshSessionAccessToken().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
 
 export async function backendFetch<T>(
   path: string,
   options: BackendFetchOptions = {}
 ): Promise<T> {
-  const { skipAuth = false, headers: customHeaders, ...fetchOptions } = options;
+  const {
+    skipAuth = false,
+    _retried = false,
+    headers: customHeaders,
+    ...fetchOptions
+  } = options;
   const headers = new Headers(customHeaders);
 
   if (!headers.has("Content-Type") && fetchOptions.body) {
@@ -109,6 +185,19 @@ export async function backendFetch<T>(
   }
 
   const statusCode = body.statusCode ?? response.status;
+
+  if (statusCode === 401 && !skipAuth && !_retried) {
+    const nextAccessToken = await ensureSessionRefreshed();
+    if (nextAccessToken) {
+      return backendFetch<T>(path, { ...options, _retried: true });
+    }
+
+    throw new BackendApiError(
+      parseErrorMessage(body.error) || "Unauthorized",
+      401,
+      body.error
+    );
+  }
 
   if (statusCode === 401) {
     throw new BackendApiError(
