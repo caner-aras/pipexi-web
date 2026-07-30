@@ -49,6 +49,14 @@ export interface WorkTaskComment {
   member?: WorkTaskCommentMember | null;
 }
 
+export interface WorkTaskReporter {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+}
+
 export interface TeamMemberTask {
   id: string;
   organizationId: string;
@@ -65,6 +73,7 @@ export interface TeamMemberTask {
   createdAt: string | null;
   updatedAt: string | null;
   comments: WorkTaskComment[];
+  reporter?: WorkTaskReporter | null;
 }
 
 export type WorkTask = TeamMemberTask;

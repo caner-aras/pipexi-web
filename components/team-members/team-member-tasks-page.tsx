@@ -33,10 +33,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TaskPersonRow } from "@/components/tasks/task-person-row";
 import {
   getTodayDateKeyUtc,
 } from "@/lib/date-format";
 import { getShiftMemberDisplayName } from "@/lib/shift-format";
+import {
+  getWorkTaskReporterAvatarUrl,
+  getWorkTaskReporterLabel,
+  getWorkTaskReporterUserId,
+} from "@/lib/work-task-format";
 import { cn } from "@/lib/utils";
 import type { TeamMember } from "@/types/team";
 import type {
@@ -508,6 +514,7 @@ function KanbanTaskCard({
   const assignedName = assignedMember
     ? getShiftMemberDisplayName(assignedMember.organizationMember)
     : null;
+  const reporterLabel = getWorkTaskReporterLabel(task, assignableMembers);
   const href = task.assignedToTeamMemberId
     ? `/team-members/${task.assignedToTeamMemberId}/tasks/${task.id}`
     : null;
@@ -555,6 +562,16 @@ function KanbanTaskCard({
           <UserRound className="size-3.5 shrink-0" />
           <span className="truncate">{assignedName}</span>
         </div>
+      ) : null}
+
+      {reporterLabel ? (
+        <TaskPersonRow
+          label="Reporter"
+          name={reporterLabel}
+          userId={getWorkTaskReporterUserId(task)}
+          avatarUrl={getWorkTaskReporterAvatarUrl(task)}
+          compact
+        />
       ) : null}
     </>
   );

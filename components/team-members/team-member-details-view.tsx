@@ -192,7 +192,7 @@ function MemberStat({
     return (
       <Link
         href={href}
-        className="flex flex-1 flex-col justify-center gap-2 px-5 py-4 transition-colors hover:bg-muted/40 lg:px-6"
+        className="flex w-full flex-1 flex-col items-start justify-center gap-2 px-5 py-4 text-left transition-colors hover:bg-muted/40 lg:px-6"
       >
         {content}
       </Link>
@@ -200,7 +200,7 @@ function MemberStat({
   }
 
   return (
-    <div className="flex flex-1 flex-col justify-center gap-2 px-5 py-4 lg:px-6">
+    <div className="flex w-full flex-1 flex-col items-start justify-center gap-2 px-5 py-4 text-left lg:px-6">
       {content}
     </div>
   );

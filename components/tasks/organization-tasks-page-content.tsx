@@ -6,10 +6,16 @@ import { useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/layout/page-header";
 import { CreateTaskDialog } from "@/components/team-members/team-member-tasks-page";
+import { TaskPersonRow } from "@/components/tasks/task-person-row";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getShiftMemberDisplayName } from "@/lib/shift-format";
+import {
+  getWorkTaskReporterAvatarUrl,
+  getWorkTaskReporterLabel,
+  getWorkTaskReporterUserId,
+} from "@/lib/work-task-format";
 import { cn } from "@/lib/utils";
 import type { TeamMember } from "@/types/team";
 import type {
@@ -106,6 +112,7 @@ function OrganizationTaskCard({
   const assignedName = assignedMember
     ? getShiftMemberDisplayName(assignedMember.organizationMember)
     : null;
+  const reporterLabel = getWorkTaskReporterLabel(task, assignableMembers);
   const href = task.assignedToTeamMemberId
     ? `/team-members/${task.assignedToTeamMemberId}/tasks/${task.id}`
     : null;
@@ -159,6 +166,16 @@ function OrganizationTaskCard({
           <span>Unassigned</span>
         </div>
       )}
+
+      {reporterLabel ? (
+        <TaskPersonRow
+          label="Reporter"
+          name={reporterLabel}
+          userId={getWorkTaskReporterUserId(task)}
+          avatarUrl={getWorkTaskReporterAvatarUrl(task)}
+          compact
+        />
+      ) : null}
     </>
   );
 

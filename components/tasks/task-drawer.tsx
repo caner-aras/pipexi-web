@@ -22,6 +22,12 @@ import {
 } from "@/components/ui/drawer";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TaskPersonRow } from "@/components/tasks/task-person-row";
+import {
+  getWorkTaskReporterAvatarUrl,
+  getWorkTaskReporterLabel,
+  getWorkTaskReporterUserId,
+} from "@/lib/work-task-format";
 import { cn } from "@/lib/utils";
 import type {
   WorkTask,
@@ -189,6 +195,7 @@ function TaskCard({
   onNavigate?: () => void;
 }) {
   const overdue = isTaskOverdue(task);
+  const reporterLabel = getWorkTaskReporterLabel(task);
 
   return (
     <article className="space-y-3 rounded-sm bg-muted p-4">
@@ -244,6 +251,16 @@ function TaskCard({
                 {formatTaskDueAt(task.dueAt)}
               </span>
             </div>
+          ) : null}
+
+          {reporterLabel ? (
+            <TaskPersonRow
+              label="Reporter"
+              name={reporterLabel}
+              userId={getWorkTaskReporterUserId(task)}
+              avatarUrl={getWorkTaskReporterAvatarUrl(task)}
+              compact
+            />
           ) : null}
 
           <TaskComments comments={task.comments} />

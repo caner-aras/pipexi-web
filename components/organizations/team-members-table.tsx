@@ -193,7 +193,7 @@ export function TeamMembersTable({
                         <DropdownMenuItem
                           onClick={() => handleEditMember(member)}
                         >
-                          Edit
+                          Edit member
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem

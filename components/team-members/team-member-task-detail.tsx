@@ -10,6 +10,7 @@ import {
   LayoutList,
   MessageSquareText,
   Pencil,
+  PenLine,
   Send,
   UserRound,
 } from "lucide-react";
@@ -42,7 +43,13 @@ import {
   formatLocalDateKey,
   getTodayDateKeyUtc,
 } from "@/lib/date-format";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { getShiftMemberDisplayName } from "@/lib/shift-format";
+import {
+  getWorkTaskReporterAvatarUrl,
+  getWorkTaskReporterLabel,
+  getWorkTaskReporterUserId,
+} from "@/lib/work-task-format";
 import { cn } from "@/lib/utils";
 import type { TeamMember } from "@/types/team";
 import type {
@@ -954,6 +961,13 @@ export function TeamMemberTaskDetail({
 
   const assignedAvatarUrl =
     assignedMember?.organizationMember.user?.avatarUrl ?? null;
+  const reporterLabel = getWorkTaskReporterLabel(task, assignableMembers);
+  const reporterUserId = getWorkTaskReporterUserId(task);
+  const reporterAvatarUrl = resolveAvatarUrl(
+    reporterUserId,
+    getWorkTaskReporterAvatarUrl(task)
+  );
+  const hasReporter = Boolean(task.reporterUserId || task.reporter);
   const dueValue = task.dueAt
     ? `${overdue ? "Overdue · " : ""}${formatDateTime(task.dueAt)}`
     : "No due date";
@@ -991,7 +1005,7 @@ export function TeamMemberTaskDetail({
           </Button>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <TaskMetaItem
             label="Status"
             value={formatWorkTaskLabel(status)}
@@ -1026,6 +1040,14 @@ export function TeamMemberTaskDetail({
                 : null
             }
           />
+          {hasReporter ? (
+            <TaskMetaItem
+              label="Reporter"
+              value={reporterLabel ?? "Unknown"}
+              icon={PenLine}
+              iconClassName="bg-violet-500/10 text-violet-600 dark:text-violet-400"
+            />
+          ) : null}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_28rem]">
@@ -1077,6 +1099,28 @@ export function TeamMemberTaskDetail({
                     <span className="text-muted-foreground">Unassigned</span>
                   )}
                 </MetaRow>
+
+                {hasReporter ? (
+                  <MetaRow icon={PenLine} label="Reporter">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-violet-500/10 text-[11px] font-semibold text-violet-600 dark:text-violet-400">
+                        {reporterAvatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={reporterAvatarUrl}
+                            alt=""
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          getInitials(reporterLabel ?? "R")
+                        )}
+                      </div>
+                      <span className="font-medium">
+                        {reporterLabel ?? "Unknown"}
+                      </span>
+                    </div>
+                  </MetaRow>
+                ) : null}
 
                 <MetaRow icon={CalendarClock} label="Due date">
                   {task.dueAt ? (
