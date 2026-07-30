@@ -37,6 +37,7 @@ function GitHubIcon(props: React.SVGProps<SVGSVGElement>) {
 export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -49,6 +50,8 @@ export function LoginForm() {
       password: "",
     },
   });
+
+  const isBusy = isSubmitting || isRedirecting;
 
   const handleGoogleLogin = () => {
     window.location.href = "/api/auth/google/login";
@@ -73,10 +76,13 @@ export function LoginForm() {
         return;
       }
 
+      // Keep the button busy until navigation finishes; router.push resolves before the page changes.
+      setIsRedirecting(true);
       const nextPath = await getPostAuthPath();
       router.push(nextPath);
       router.refresh();
     } catch {
+      setIsRedirecting(false);
       setError("Something went wrong. Please try again.");
     }
   }
@@ -101,7 +107,8 @@ export function LoginForm() {
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-sm border border-border/50 bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
+          disabled={isBusy}
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-sm border border-border/50 bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
         >
           <GoogleIcon className="size-4 shrink-0" aria-hidden />
           Login with Google
@@ -127,6 +134,7 @@ export function LoginForm() {
             autoComplete="email"
             className="mt-2 shadow-sm"
             aria-invalid={!!errors.email}
+            disabled={isBusy}
             {...register("email")}
           />
           {errors.email && (
@@ -145,6 +153,7 @@ export function LoginForm() {
             autoComplete="current-password"
             className="mt-2 shadow-sm"
             aria-invalid={!!errors.password}
+            disabled={isBusy}
             {...register("password")}
           />
           {errors.password && (
@@ -163,9 +172,9 @@ export function LoginForm() {
         <Button
           type="submit"
           className="mt-2 w-full"
-          disabled={isSubmitting}
+          disabled={isBusy}
         >
-          {isSubmitting ? (
+          {isBusy ? (
             <>
               <Loader2 className="animate-spin" />
               Signing in...
