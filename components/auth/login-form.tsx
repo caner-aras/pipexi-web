@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { getPostAuthPath } from "@/lib/auth/post-auth-redirect";
 import {
   loginSchema,
   type LoginFormValues,
@@ -72,7 +73,8 @@ export function LoginForm() {
         return;
       }
 
-      router.push("/dashboard");
+      const nextPath = await getPostAuthPath();
+      router.push(nextPath);
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");

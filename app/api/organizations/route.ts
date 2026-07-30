@@ -1,7 +1,29 @@
 import { NextResponse } from "next/server";
 
 import { BackendApiError } from "@/lib/server/api-client";
-import { createOrganization } from "@/lib/server/services/organization.service";
+import {
+  createOrganization,
+  getOrganizations,
+} from "@/lib/server/services/organization.service";
+
+export async function GET() {
+  try {
+    const organizations = await getOrganizations();
+    return NextResponse.json({ data: organizations });
+  } catch (error) {
+    if (error instanceof BackendApiError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.statusCode || 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Failed to load organizations" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   let body: unknown;

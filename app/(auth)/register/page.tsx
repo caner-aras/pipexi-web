@@ -1,9 +1,9 @@
-import { RegisterForm } from "@/components/auth/register-form";
+import { OnboardingWizard } from "@/components/auth/onboarding-wizard";
 
 export default function RegisterPage() {
   return (
     <div className="sm:mx-auto sm:w-full sm:max-w-md">
-      <RegisterForm />
+      <OnboardingWizard initialStep="account" />
     </div>
   );
 }

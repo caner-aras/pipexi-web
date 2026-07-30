@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { AppSidebar } from "@/components/app-sidebar";
 import { UnauthorizedHandler } from "@/components/auth/unauthorized-handler";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
@@ -47,6 +49,10 @@ export default async function DashboardLayout({
     } else {
       userError = "Failed to load user.";
     }
+  }
+
+  if (!organizationsError && organizations.length === 0) {
+    redirect("/onboarding");
   }
 
   const cookieOrganizationId = await getSelectedOrganizationIdFromCookie();

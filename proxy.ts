@@ -6,6 +6,7 @@ import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/types/auth";
 const LOGIN_PATH = "/login";
 const REGISTER_PATH = "/register";
 const FORGOT_PASSWORD_PATH = "/forgot-password";
+const ONBOARDING_PATH = "/onboarding";
 const DASHBOARD_PATH = "/dashboard";
 
 function hasValidSession(request: NextRequest): boolean {
@@ -31,12 +32,24 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith(ONBOARDING_PATH)) {
+    if (!isAuthenticated) {
+      return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+    }
+
+    return NextResponse.next();
+  }
+
   if (
     pathname.startsWith(LOGIN_PATH) ||
     pathname.startsWith(REGISTER_PATH) ||
     pathname.startsWith(FORGOT_PASSWORD_PATH)
   ) {
     if (isAuthenticated) {
+      if (pathname.startsWith(REGISTER_PATH)) {
+        return NextResponse.redirect(new URL(ONBOARDING_PATH, request.url));
+      }
+
       return NextResponse.redirect(new URL(DASHBOARD_PATH, request.url));
     }
 

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { getPostAuthPath } from "@/lib/auth/post-auth-redirect";
 import { decodeJwtPayload } from "@/lib/auth/jwt";
 
 export default function AuthCallbackPage() {
@@ -98,7 +99,8 @@ export default function AuthCallbackPage() {
           return;
         }
 
-        router.push("/dashboard");
+        const nextPath = await getPostAuthPath();
+        router.push(nextPath);
         router.refresh();
       } catch (err: unknown) {
         if (cancelled) {

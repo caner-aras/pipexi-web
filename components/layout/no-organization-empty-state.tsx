@@ -25,11 +25,11 @@ export function NoOrganizationEmptyState({
         description="Create your first organization to get started."
         action={
           <Link
-            href="/organizations"
+            href="/onboarding"
             className={cn(buttonVariants({ size: "sm" }))}
           >
             <Plus className="size-4" />
-            New organization
+            Set up workspace
           </Link>
         }
       />
