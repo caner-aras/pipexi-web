@@ -8,7 +8,10 @@ import {
   REFRESH_TOKEN_COOKIE,
   type LoginTokenData,
 } from "@/types/auth";
+import { SELECTED_ORGANIZATION_COOKIE } from "@/types/organization";
 import type { BackendErrorPayload, BackendResponse } from "@/types/api";
+
+export const ORGANIZATION_ID_HEADER = "X-Organization-Id";
 
 export class BackendApiError extends Error {
   constructor(
@@ -163,6 +166,16 @@ export async function backendFetch<T>(
 
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    if (!headers.has(ORGANIZATION_ID_HEADER)) {
+      const selectedOrganizationId = cookieStore.get(
+        SELECTED_ORGANIZATION_COOKIE
+      )?.value;
+
+      if (selectedOrganizationId) {
+        headers.set(ORGANIZATION_ID_HEADER, selectedOrganizationId);
+      }
     }
   }
 

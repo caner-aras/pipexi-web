@@ -36,6 +36,8 @@ export interface UserProfile {
 export interface AuthUser {
   userId: string;
   organizationId: string;
+  organizationMemberId?: string | null;
+  roleId?: string | null;
   role: string;
   firstName: string;
   lastName: string;
