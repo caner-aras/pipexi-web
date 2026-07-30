@@ -22,7 +22,7 @@ export function ScreenshotPlaceholder({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col items-center justify-center overflow-hidden rounded-[1.5rem] border-2 border-dashed border-[#e86a3d]/35 bg-[#fff8f1]/70",
+        "relative flex w-full flex-col items-center justify-center overflow-hidden rounded-[1.5rem] border-2 border-dashed border-brand/35 bg-brand/5",
         RATIO_CLASS[ratio],
         className
       )}
@@ -32,13 +32,13 @@ export function ScreenshotPlaceholder({
         className="pointer-events-none absolute inset-0 opacity-60"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 20% 20%, rgba(31,168,85,0.14), transparent 42%), radial-gradient(circle at 80% 70%, rgba(232,106,61,0.16), transparent 45%)",
+            "radial-gradient(circle at 20% 20%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 42%), radial-gradient(circle at 80% 70%, color-mix(in oklab, var(--brand) 16%, transparent), transparent 45%)",
         }}
       />
-      <p className="relative z-10 px-4 text-center text-sm font-bold tracking-wide text-[#c45a2c]">
+      <p className="relative z-10 px-4 text-center text-sm font-bold tracking-wide text-brand-hover">
         {label}
       </p>
-      <p className="relative z-10 mt-1 max-w-xs px-4 text-center text-xs font-medium text-[#78716c]">
+      <p className="relative z-10 mt-1 max-w-xs px-4 text-center text-xs font-medium text-muted-foreground">
         {hint}
       </p>
     </div>

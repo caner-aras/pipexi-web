@@ -50,7 +50,7 @@ export function LandingPage({ user }: LandingPageProps) {
       className={cn(
         montserrat.variable,
         poppins.variable,
-        "landing min-h-screen bg-white text-zinc-900 selection:bg-[#e86a3d]/20 selection:text-[#e86a3d]",
+        "landing min-h-screen bg-card text-foreground selection:bg-brand/20 selection:text-brand",
         "font-[family-name:var(--font-poppins)] overflow-x-hidden"
       )}
     >

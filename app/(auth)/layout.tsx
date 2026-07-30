@@ -11,7 +11,7 @@ export default function AuthLayout({
       <div className="absolute top-6 left-6 z-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-950 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to homepage</span>

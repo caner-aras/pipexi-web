@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 
 export function LandingIntegrations() {
   return (
-    <section id="integrations" className="py-24 bg-zinc-950 text-white overflow-hidden text-center">
+    <section id="integrations" className="py-24 bg-foreground text-background overflow-hidden text-center">
       <div className="mx-auto max-w-3xl px-6 mb-16">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white mb-6 border border-white/10">
+        <div className="inline-flex items-center gap-2 rounded-full bg-card/10 px-4 py-1.5 text-xs font-bold text-background mb-6 border border-white/10">
           <Globe className="size-4" /> Seamless Ecosystem
         </div>
         <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl mb-6">Connected integrations</h2>
-        <p className="text-lg font-semibold text-zinc-400">
+        <p className="text-lg font-semibold text-muted-foreground">
           Pipexi plays nicely with the payroll, HRIS, and accounting software you already use. Sync your data instantly without manual data entry.
         </p>
       </div>
@@ -28,7 +28,7 @@ export function LandingIntegrations() {
         ].map((tool, i) => (
           <div
             key={i}
-            className="h-20 w-48 rounded-3xl bg-white border border-zinc-100 flex items-center justify-center p-4 hover:bg-zinc-50/80 hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer"
+            className="h-20 w-48 rounded-3xl bg-card border border-border flex items-center justify-center p-4 hover:bg-muted/80 hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer"
           >
             <div className={cn("relative w-full h-full flex items-center justify-center")}>
               <div className={cn("relative", tool.aspect)}>

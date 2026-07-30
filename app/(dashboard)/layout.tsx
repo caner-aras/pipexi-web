@@ -4,7 +4,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { UnauthorizedHandler } from "@/components/auth/unauthorized-handler";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { OrganizationProvider } from "@/components/layout/organization-provider";
-import { OrganizationTasksProvider } from "@/components/tasks/organization-tasks-context";
 import { TeamMemberTasksProvider } from "@/components/team-members/team-member-tasks-context";
 import { BackendApiError, backendFetch } from "@/lib/server/api-client";
 import { redirectIfUnauthorized } from "@/lib/server/redirect-if-unauthorized";
@@ -71,16 +70,14 @@ export default async function DashboardLayout({
         <SidebarProvider>
           <AppSidebar user={user} userError={userError} />
           <SidebarInset className="min-w-0">
-            <OrganizationTasksProvider>
-              <TeamMemberTasksProvider>
-                <div className="print:hidden">
-                  <DashboardHeader organizationsError={organizationsError} />
-                </div>
-                <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden bg-muted/20 print:bg-white print:overflow-visible">
-                  {children}
-                </div>
-              </TeamMemberTasksProvider>
-            </OrganizationTasksProvider>
+            <TeamMemberTasksProvider>
+              <div className="print:hidden">
+                <DashboardHeader organizationsError={organizationsError} />
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden bg-muted/20 print:bg-white print:overflow-visible">
+                {children}
+              </div>
+            </TeamMemberTasksProvider>
           </SidebarInset>
         </SidebarProvider>
       </NavigationLoadingProvider>

@@ -124,7 +124,7 @@ export default function AuthCallbackPage() {
         <p className="mt-2 text-sm text-muted-foreground">{error}</p>
         <button
           onClick={() => router.push("/login")}
-          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-zinc-900 px-6 text-sm font-semibold text-white hover:bg-zinc-800"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-foreground px-6 text-sm font-semibold text-background hover:bg-foreground/90"
         >
           Return to Sign In
         </button>
@@ -134,8 +134,8 @@ export default function AuthCallbackPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
-      <Loader2 className="size-8 animate-spin text-[#e86a3d]" />
-      <p className="mt-4 text-sm font-bold text-zinc-600">Completing sign in...</p>
+      <Loader2 className="size-8 animate-spin text-brand" />
+      <p className="mt-4 text-sm font-bold text-muted-foreground">Completing sign in...</p>
     </div>
   );
 }

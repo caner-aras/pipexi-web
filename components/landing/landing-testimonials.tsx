@@ -27,10 +27,10 @@ const TESTIMONIALS = [
 
 export function LandingTestimonials() {
   return (
-    <section className="py-24 sm:py-32 bg-white overflow-hidden">
+    <section className="py-24 sm:py-32 bg-card overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-8 mb-16 text-center">
-        <h2 className="text-4xl font-extrabold text-zinc-900 tracking-tight sm:text-5xl mb-6">Loved by thousands of operators</h2>
-        <p className="text-xl font-semibold text-zinc-500 max-w-2xl mx-auto">
+        <h2 className="text-4xl font-extrabold text-foreground tracking-tight sm:text-5xl mb-6">Loved by thousands of operators</h2>
+        <p className="text-xl font-semibold text-muted-foreground max-w-2xl mx-auto">
           From independent cafes to regional health facilities, teams rely on Pipexi to run their workdays cleanly.
         </p>
       </div>
@@ -42,7 +42,7 @@ export function LandingTestimonials() {
             {TESTIMONIALS.slice(0, 12).map((t, idx) => (
               <div
                 key={idx}
-                className="w-[380px] rounded-3xl bg-white border border-zinc-200/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+                className="w-[380px] rounded-3xl bg-card border border-border/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex text-amber-400 mb-4">
@@ -52,14 +52,14 @@ export function LandingTestimonials() {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-[15px] font-semibold text-zinc-700 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
+                  <p className="text-[15px] font-semibold text-foreground/80 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-500">
+                    <div className="size-10 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
                       {t.author.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-zinc-900">{t.author}</div>
-                      <div className="text-[13px] font-bold text-zinc-500">{t.role}</div>
+                      <div className="text-sm font-bold text-foreground">{t.author}</div>
+                      <div className="text-[13px] font-bold text-muted-foreground">{t.role}</div>
                     </div>
                   </div>
                 </div>
@@ -71,7 +71,7 @@ export function LandingTestimonials() {
             {TESTIMONIALS.slice(0, 12).map((t, idx) => (
               <div
                 key={`dup1-${idx}`}
-                className="w-[380px] rounded-3xl bg-white border border-zinc-200/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+                className="w-[380px] rounded-3xl bg-card border border-border/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex text-amber-400 mb-4">
@@ -81,14 +81,14 @@ export function LandingTestimonials() {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-[15px] font-semibold text-zinc-700 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
+                  <p className="text-[15px] font-semibold text-foreground/80 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-500">
+                    <div className="size-10 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
                       {t.author.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-zinc-900">{t.author}</div>
-                      <div className="text-[13px] font-bold text-zinc-500">{t.role}</div>
+                      <div className="text-sm font-bold text-foreground">{t.author}</div>
+                      <div className="text-[13px] font-bold text-muted-foreground">{t.role}</div>
                     </div>
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export function LandingTestimonials() {
             {TESTIMONIALS.slice(12, 24).map((t, idx) => (
               <div
                 key={idx}
-                className="w-[380px] rounded-3xl bg-white border border-zinc-200/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+                className="w-[380px] rounded-3xl bg-card border border-border/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex text-amber-400 mb-4">
@@ -113,14 +113,14 @@ export function LandingTestimonials() {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-[15px] font-semibold text-zinc-700 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
+                  <p className="text-[15px] font-semibold text-foreground/80 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-500">
+                    <div className="size-10 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
                       {t.author.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-zinc-900">{t.author}</div>
-                      <div className="text-[13px] font-bold text-zinc-500">{t.role}</div>
+                      <div className="text-sm font-bold text-foreground">{t.author}</div>
+                      <div className="text-[13px] font-bold text-muted-foreground">{t.role}</div>
                     </div>
                   </div>
                 </div>
@@ -132,7 +132,7 @@ export function LandingTestimonials() {
             {TESTIMONIALS.slice(12, 24).map((t, idx) => (
               <div
                 key={`dup2-${idx}`}
-                className="w-[380px] rounded-3xl bg-white border border-zinc-200/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+                className="w-[380px] rounded-3xl bg-card border border-border/60 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex text-amber-400 mb-4">
@@ -142,14 +142,14 @@ export function LandingTestimonials() {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-[15px] font-semibold text-zinc-700 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
+                  <p className="text-[15px] font-semibold text-foreground/80 leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-500">
+                    <div className="size-10 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
                       {t.author.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-zinc-900">{t.author}</div>
-                      <div className="text-[13px] font-bold text-zinc-500">{t.role}</div>
+                      <div className="text-sm font-bold text-foreground">{t.author}</div>
+                      <div className="text-[13px] font-bold text-muted-foreground">{t.role}</div>
                     </div>
                   </div>
                 </div>

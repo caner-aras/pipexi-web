@@ -4,7 +4,15 @@ import { useCallback, useEffect, useState } from "react";
 
 import type { WorkTask } from "@/types/team-member-task";
 
-export function useOrganizationTasks(organizationId: string | null) {
+interface UseOrganizationTasksOptions {
+  enabled?: boolean;
+}
+
+export function useOrganizationTasks(
+  organizationId: string | null,
+  options: UseOrganizationTasksOptions = {}
+) {
+  const { enabled = true } = options;
   const [tasks, setTasks] = useState<WorkTask[]>([]);
   const [loadedOrganizationId, setLoadedOrganizationId] = useState<
     string | null
@@ -18,7 +26,7 @@ export function useOrganizationTasks(organizationId: string | null) {
   }, []);
 
   useEffect(() => {
-    if (!organizationId) {
+    if (!organizationId || !enabled) {
       return;
     }
 
@@ -69,13 +77,16 @@ export function useOrganizationTasks(organizationId: string | null) {
     return () => {
       active = false;
     };
-  }, [organizationId, refreshKey]);
+  }, [organizationId, enabled, refreshKey]);
 
   const isCurrentOrganization = loadedOrganizationId === organizationId;
 
   return {
     tasks: organizationId && isCurrentOrganization ? tasks : [],
-    isLoading: Boolean(organizationId) && (!isCurrentOrganization || isLoading),
+    isLoading:
+      Boolean(organizationId) &&
+      enabled &&
+      (!isCurrentOrganization || isLoading),
     error: organizationId && isCurrentOrganization ? error : null,
     refetch,
   };

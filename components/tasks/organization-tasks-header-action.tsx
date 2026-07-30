@@ -2,15 +2,19 @@
 
 import { useState } from "react";
 
-import { useOrganizationTasksContext } from "@/components/tasks/organization-tasks-context";
+import { useOrganization } from "@/components/layout/organization-provider";
 import { TaskDrawer, TasksTrigger } from "@/components/tasks/task-drawer";
+import { useOrganizationTasks } from "@/hooks/use-organization-tasks";
 
 export function OrganizationTasksHeaderAction() {
   const [open, setOpen] = useState(false);
-  const { organizationId, organizationName, tasks, isLoading, error } =
-    useOrganizationTasksContext();
+  const { selectedOrganization, selectedOrganizationId } = useOrganization();
+  const { tasks, isLoading, error } = useOrganizationTasks(
+    selectedOrganizationId,
+    { enabled: open }
+  );
 
-  if (!organizationId) {
+  if (!selectedOrganizationId) {
     return null;
   }
 
@@ -26,8 +30,8 @@ export function OrganizationTasksHeaderAction() {
       <TaskDrawer
         title="Organization tasks"
         subtitle={
-          organizationName
-            ? `${organizationName} · ${tasks.length} ${tasks.length === 1 ? "task" : "tasks"}`
+          selectedOrganization?.name
+            ? `${selectedOrganization.name} · ${tasks.length} ${tasks.length === 1 ? "task" : "tasks"}`
             : `${tasks.length} ${tasks.length === 1 ? "task" : "tasks"}`
         }
         emptyTitle="No tasks"

@@ -25,9 +25,9 @@ export function LandingFaq() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-[#FAFAFA] py-24 sm:py-32">
+    <section id="faq" className="bg-muted py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-6 md:px-8">
-        <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl mb-12 text-center">
+        <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl mb-12 text-center">
           Frequently asked questions
         </h2>
 
@@ -37,23 +37,23 @@ export function LandingFaq() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-zinc-200/60 bg-white overflow-hidden transition-all duration-300 shadow-sm"
+                className="rounded-2xl border border-border/60 bg-card overflow-hidden transition-all duration-300 shadow-sm"
               >
                 <button
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between gap-4 px-6 py-6 text-left text-[17px] font-bold text-zinc-900"
+                  className="w-full flex items-center justify-between gap-4 px-6 py-6 text-left text-[17px] font-bold text-foreground"
                 >
                   {item.q}
-                  <span className={cn("shrink-0 size-8 rounded-full flex items-center justify-center transition-colors", isOpen ? "bg-zinc-100" : "bg-zinc-50")}>
+                  <span className={cn("shrink-0 size-8 rounded-full flex items-center justify-center transition-colors", isOpen ? "bg-muted" : "bg-muted")}>
                     {isOpen ? (
-                      <ChevronDown className="size-4 text-[#e86a3d]" />
+                      <ChevronDown className="size-4 text-brand" />
                     ) : (
-                      <ChevronRight className="size-4 text-zinc-500" />
+                      <ChevronRight className="size-4 text-muted-foreground" />
                     )}
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-6 text-[15px] font-semibold leading-relaxed text-zinc-600 border-t border-zinc-100 pt-5">
+                  <div className="px-6 pb-6 text-[15px] font-semibold leading-relaxed text-muted-foreground border-t border-border pt-5">
                     {item.a}
                   </div>
                 )}

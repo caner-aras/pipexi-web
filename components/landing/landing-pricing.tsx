@@ -56,10 +56,10 @@ interface LandingPricingProps {
 
 export function LandingPricing({ displayName }: LandingPricingProps) {
   return (
-    <section id="pricing" className="bg-[#FAFAFA] py-24 sm:py-32 border-b border-zinc-200/50">
+    <section id="pricing" className="bg-muted py-24 sm:py-32 border-b border-border/50">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="flex flex-col items-center text-center mb-16">
-          <h2 className="text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl">
+          <h2 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
             Simple plans that scale
           </h2>
         </div>
@@ -69,26 +69,26 @@ export function LandingPricing({ displayName }: LandingPricingProps) {
             <div
               key={plan.name}
               className={cn(
-                "flex flex-col rounded-[2.5rem] p-10 transition-all duration-300 relative group bg-white border border-zinc-200/80 shadow-sm hover:shadow-xl hover:border-zinc-300",
-                plan.featured && "ring-[3px] ring-[#e86a3d] shadow-2xl shadow-orange-500/10 hover:border-transparent scale-[1.02]"
+                "flex flex-col rounded-[2.5rem] p-10 transition-all duration-300 relative group bg-card border border-border/80 shadow-sm hover:shadow-xl hover:border-border",
+                plan.featured && "ring-[3px] ring-brand shadow-2xl shadow-brand/10 hover:border-transparent scale-[1.02]"
               )}
             >
               {plan.featured && (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#e86a3d] text-white text-[12px] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm">
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand text-brand-foreground text-[12px] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm">
                   Most Popular
                 </span>
               )}
-              <h3 className="text-2xl font-extrabold text-zinc-900">{plan.name}</h3>
+              <h3 className="text-2xl font-extrabold text-foreground">{plan.name}</h3>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-6xl font-black tracking-tight text-zinc-900">{plan.price}</span>
-                <span className="text-base font-bold text-zinc-400">{plan.period}</span>
+                <span className="text-6xl font-black tracking-tight text-foreground">{plan.price}</span>
+                <span className="text-base font-bold text-muted-foreground">{plan.period}</span>
               </div>
-              <p className="mt-4 text-[15px] font-semibold text-zinc-500 h-12">{plan.detail}</p>
+              <p className="mt-4 text-[15px] font-semibold text-muted-foreground h-12">{plan.detail}</p>
 
-              <ul className="mt-8 flex-1 space-y-4 border-t border-zinc-100 pt-8">
+              <ul className="mt-8 flex-1 space-y-4 border-t border-border pt-8">
                 {plan.highlights.map((item) => (
-                  <li key={item} className="flex gap-3 text-[15px] font-bold text-zinc-700">
-                    <Check className="size-5 text-[#e86a3d] shrink-0 bg-orange-50 rounded-full p-0.5" />
+                  <li key={item} className="flex gap-3 text-[15px] font-bold text-foreground/80">
+                    <Check className="size-5 text-brand shrink-0 bg-brand/5 rounded-full p-0.5" />
                     {item}
                   </li>
                 ))}
@@ -99,8 +99,8 @@ export function LandingPricing({ displayName }: LandingPricingProps) {
                 className={cn(
                   "mt-10 inline-flex h-14 items-center justify-center rounded-full px-6 text-base font-bold transition-all w-full",
                   plan.featured
-                    ? "bg-zinc-900 text-white hover:bg-zinc-800 hover:shadow-lg"
-                    : "bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
+                    ? "bg-foreground text-background hover:bg-foreground/90 hover:shadow-lg"
+                    : "bg-muted text-foreground hover:bg-muted"
                 )}
               >
                 Get started

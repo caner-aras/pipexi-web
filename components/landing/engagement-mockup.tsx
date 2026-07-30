@@ -41,7 +41,7 @@ export function EngagementMockup({
   return (
     <div
       className={cn(
-        "relative h-full w-full bg-white rounded-[3rem] border border-zinc-200 shadow-xl overflow-hidden flex flex-col p-6 gap-6 bg-zinc-50/50 text-left",
+        "relative h-full w-full bg-card rounded-[3rem] border border-border shadow-xl overflow-hidden flex flex-col p-6 gap-6 bg-muted/50 text-left",
         className
       )}
     >
@@ -49,7 +49,7 @@ export function EngagementMockup({
         <div
           key={idx}
           className={cn(
-            "bg-white rounded-2xl p-5 border border-zinc-100 shadow-sm space-y-4 transition-all duration-300 hover:shadow-md",
+            "bg-card rounded-2xl p-5 border border-border shadow-sm space-y-4 transition-all duration-300 hover:shadow-md",
             idx > 0 ? "opacity-60" : ""
           )}
         >
@@ -59,18 +59,18 @@ export function EngagementMockup({
               {item.avatarInitials}
             </div>
             <div className="space-y-0.5">
-              <div className="text-sm font-extrabold text-zinc-900">{item.authorName}</div>
-              <div className="text-[11px] font-bold text-zinc-400">{item.roleAndTime}</div>
+              <div className="text-sm font-extrabold text-foreground">{item.authorName}</div>
+              <div className="text-[11px] font-bold text-muted-foreground">{item.roleAndTime}</div>
             </div>
           </div>
 
           {/* Post Content */}
-          <div className={cn("rounded-xl p-4 text-xs font-semibold leading-relaxed text-zinc-600 border", item.highlightClass || "bg-zinc-50 border-zinc-100")}>
+          <div className={cn("rounded-xl p-4 text-xs font-semibold leading-relaxed text-muted-foreground border", item.highlightClass || "bg-muted border-border")}>
             {item.text}
           </div>
 
           {/* Interactions */}
-          <div className="flex gap-4 pt-2 border-t border-zinc-100 text-[11px] font-bold text-zinc-400">
+          <div className="flex gap-4 pt-2 border-t border-border text-[11px] font-bold text-muted-foreground">
             <button className="flex items-center gap-1.5 hover:text-purple-600 transition-colors">
               <ThumbsUp className="size-3.5" />
               <span>{item.likesCount}</span>
