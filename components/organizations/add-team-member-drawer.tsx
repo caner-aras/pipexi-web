@@ -50,7 +50,11 @@ function AddTeamMemberForm({
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [roleId, setRoleId] = useState<string | null>(roles[0]?.id ?? null);
+  const [roleId, setRoleId] = useState<string | null>(() => {
+    const preferred =
+      roles.find((role) => role.name.toLowerCase() !== "owner") ?? roles[0];
+    return preferred?.id ?? null;
+  });
   const [jobTitle, setJobTitle] = useState("");
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
