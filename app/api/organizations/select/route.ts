@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { BackendApiError, backendFetch } from "@/lib/server/api-client";
+import { BackendApiError } from "@/lib/server/api-client";
+import { getOrganizations } from "@/lib/server/services/organization.service";
 import { SELECTED_ORGANIZATION_COOKIE } from "@/types/organization";
-import type { Organization } from "@/types/auth";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const organizations = await backendFetch<Organization[]>("/organizations");
+    const organizations = await getOrganizations();
     const organization = organizations.find((org) => org.id === organizationId);
 
     if (!organization) {

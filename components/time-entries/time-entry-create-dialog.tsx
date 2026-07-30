@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import {
@@ -62,20 +63,6 @@ interface TimeEntryBreakDraft {
   startTime: string;
   endTime: string;
   isPaid: boolean;
-}
-
-function getMemberInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-
-  if (parts.length === 0) {
-    return "?";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
 function getDefaultEndTime(startTime: string): string {
@@ -411,9 +398,15 @@ function TimeEntryCreateForm({
               />
             }
           >
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-background text-xs font-semibold tracking-wide ring-1 ring-border/60">
-              {getMemberInitials(memberName)}
-            </div>
+            <PersonAvatar
+              name={memberName}
+              userId={
+                shift.organizationMember?.user?.id ?? shift.organizationMemberId
+              }
+              avatarUrl={shift.organizationMember?.user?.avatarUrl}
+              size="sm"
+              className="ring-1 ring-border/60"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{shift.title}</p>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">

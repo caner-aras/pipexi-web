@@ -40,38 +40,43 @@ function getBackendBaseUrl(): string {
 }
 
 function parseErrorMessage(
-  error: BackendErrorPayload | string | null
+  error: BackendErrorPayload | string | null,
+  fallbackDetail?: string | null
 ): string {
-  if (!error) {
-    return "Request failed";
-  }
+  if (error) {
+    const rawMessage =
+      typeof error === "string"
+        ? error
+        : error.message ?? error.title ?? null;
 
-  const rawMessage =
-    typeof error === "string"
-      ? error
-      : error.message ?? error.title ?? "Request failed";
-
-  if (rawMessage && typeof rawMessage === "string") {
-    const trimmed = rawMessage.trim();
-    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-      try {
-        const parsed = JSON.parse(trimmed);
-        if (parsed && typeof parsed === "object") {
-          return (
-            parsed.msg ||
-            parsed.message ||
-            parsed.error_description ||
-            parsed.title ||
-            rawMessage
-          );
+    if (rawMessage && typeof rawMessage === "string") {
+      const trimmed = rawMessage.trim();
+      if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed === "object") {
+            return (
+              parsed.msg ||
+              parsed.message ||
+              parsed.error_description ||
+              parsed.title ||
+              rawMessage
+            );
+          }
+        } catch {
+          // Fallback to raw message if parsing fails
         }
-      } catch {
-        // Fallback to raw message if parsing fails
       }
+
+      return rawMessage;
     }
   }
 
-  return rawMessage;
+  if (fallbackDetail?.trim()) {
+    return fallbackDetail.trim();
+  }
+
+  return "Request failed";
 }
 
 type BackendFetchOptions = RequestInit & {
@@ -185,10 +190,10 @@ export async function backendFetch<T>(
     cache: "no-store",
   });
 
-  let body: BackendResponse<T>;
+  let body: BackendResponse<T> & { detail?: string };
 
   try {
-    body = (await response.json()) as BackendResponse<T>;
+    body = (await response.json()) as BackendResponse<T> & { detail?: string };
   } catch {
     if (response.status === 401) {
       throw new BackendApiError("Unauthorized", 401);
@@ -198,6 +203,7 @@ export async function backendFetch<T>(
   }
 
   const statusCode = body.statusCode ?? response.status;
+  const fallbackDetail = typeof body.detail === "string" ? body.detail : null;
 
   if (statusCode === 401 && !skipAuth && !_retried) {
     const nextAccessToken = await ensureSessionRefreshed();
@@ -206,7 +212,7 @@ export async function backendFetch<T>(
     }
 
     throw new BackendApiError(
-      parseErrorMessage(body.error) || "Unauthorized",
+      parseErrorMessage(body.error, fallbackDetail) || "Unauthorized",
       401,
       body.error
     );
@@ -214,15 +220,15 @@ export async function backendFetch<T>(
 
   if (statusCode === 401) {
     throw new BackendApiError(
-      parseErrorMessage(body.error) || "Unauthorized",
+      parseErrorMessage(body.error, fallbackDetail) || "Unauthorized",
       401,
       body.error
     );
   }
 
-  if (!response.ok || !body.isSuccess) {
+  if (!response.ok || body.isSuccess === false) {
     throw new BackendApiError(
-      parseErrorMessage(body.error),
+      parseErrorMessage(body.error, fallbackDetail),
       statusCode,
       body.error
     );

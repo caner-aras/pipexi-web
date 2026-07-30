@@ -1,11 +1,12 @@
 "use client";
 
 import { Camera, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import {
   Drawer,
   DrawerContent,
@@ -31,19 +32,6 @@ import { ENTITY_STATUS_OPTIONS } from "@/lib/record-status";
 import { getShiftMemberDisplayName } from "@/lib/shift-format";
 import type { TeamMember } from "@/types/team";
 
-function getMemberInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) {
-    return "?";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
-}
-
 interface MemberAvatarPickerProps {
   name: string;
   userId: string;
@@ -61,13 +49,6 @@ function MemberAvatarPicker({
 }: MemberAvatarPickerProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
-  const [imageFailed, setImageFailed] = useState(false);
-  const resolvedAvatarUrl = avatarUrl ?? resolveAvatarUrl(userId, null);
-  const showImage = Boolean(resolvedAvatarUrl) && !imageFailed;
-
-  useEffect(() => {
-    setImageFailed(false);
-  }, [resolvedAvatarUrl]);
 
   function openPicker() {
     if (disabled) {
@@ -137,19 +118,12 @@ function MemberAvatarPicker({
         onClick={openPicker}
         disabled={disabled}
       >
-        <div className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-muted text-xl font-semibold text-muted-foreground">
-          {showImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={resolvedAvatarUrl!}
-              alt=""
-              className="size-full object-cover"
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            getMemberInitials(name)
-          )}
-        </div>
+        <PersonAvatar
+          name={name}
+          userId={userId}
+          avatarUrl={avatarUrl}
+          size="xl"
+        />
         <span className="absolute bottom-0 right-0 flex size-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
           <Camera className="size-3.5" />
         </span>

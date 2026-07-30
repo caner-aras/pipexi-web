@@ -23,6 +23,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import {
   Select,
@@ -88,20 +89,6 @@ function formatLongDate(dateKey: string): string {
     day: "numeric",
     timeZone: "UTC",
   }).format(new Date(`${dateKey}T12:00:00Z`));
-}
-
-function getMemberInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-
-  if (parts.length === 0) {
-    return "?";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
 interface ShiftsViewProps {
@@ -611,13 +598,18 @@ function ShiftsCompactFeed({
                         const label = getShiftAssigneeLabel(shift);
 
                         return (
-                          <div
+                          <PersonAvatar
                             key={shift.id}
-                            className="flex size-8 items-center justify-center rounded-full border border-border/50 bg-background text-xs font-semibold tracking-wide ring-2 ring-background"
+                            name={label}
+                            userId={
+                              shift.organizationMember?.user?.id ??
+                              shift.organizationMemberId
+                            }
+                            avatarUrl={shift.organizationMember?.user?.avatarUrl}
+                            size="xs"
+                            className="ring-2 ring-background"
                             title={label}
-                          >
-                            {getMemberInitials(label)}
-                          </div>
+                          />
                         );
                       })}
                       {extraCount > 0 ? (
@@ -671,9 +663,15 @@ function CompactShiftAssignmentCard({
         className="flex items-center gap-3 px-3.5 py-3 transition-colors hover:bg-muted/50"
         onClick={onNavigate}
       >
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-xs font-semibold tracking-wide text-foreground ring-1 ring-border/40">
-          {getMemberInitials(assigneeLabel)}
-        </div>
+        <PersonAvatar
+          name={assigneeLabel}
+          userId={
+            shift.organizationMember?.user?.id ?? shift.organizationMemberId
+          }
+          avatarUrl={shift.organizationMember?.user?.avatarUrl}
+          size="md"
+          className="ring-1 ring-border/40"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <p className="truncate text-sm font-medium">{assigneeLabel}</p>

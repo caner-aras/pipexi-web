@@ -24,6 +24,7 @@ import { ShiftEditDialog } from "@/components/shifts/shift-edit-dialog";
 import { TimeEntryCreateDialog } from "@/components/time-entries/time-entry-create-dialog";
 import { TimeEntryEditDialog } from "@/components/time-entries/time-entry-edit-dialog";
 import { PageHeader } from "@/components/layout/page-header";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -80,20 +81,6 @@ function getShiftFormHref(
 ): string {
   const params = new URLSearchParams({ name: formTemplateName });
   return `/forms/${formTemplateId}/submissions/shift/${shiftId}?${params.toString()}`;
-}
-
-function getMemberInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-
-  if (parts.length === 0) {
-    return "?";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
 function ShiftMetaItem({
@@ -221,9 +208,16 @@ function ShiftTimeEntriesPanel({
       <ul className="space-y-3">
         <li className="overflow-hidden rounded-xl bg-muted/35">
           <div className="flex items-center gap-3 px-3.5 py-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-xs font-semibold tracking-wide text-foreground ring-1 ring-border/60">
-              {getMemberInitials(displayName)}
-            </div>
+            <PersonAvatar
+              name={displayName}
+              userId={
+                shift.organizationMember?.user?.id ??
+                shift.organizationMemberId
+              }
+              avatarUrl={shift.organizationMember?.user?.avatarUrl}
+              size="md"
+              className="ring-1 ring-border/60"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{displayName}</p>
               <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">

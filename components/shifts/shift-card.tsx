@@ -13,6 +13,7 @@ import { NavLink as Link } from "@/components/ui/nav-link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -450,13 +451,6 @@ export function ShiftStats({ stats }: ShiftStatsProps) {
   );
 }
 
-function getMemberInitials(name: string): string {
-  if (!name) return "";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-}
-
 interface ShiftDayGroupProps {
   dateKey: string;
   dateLabel: string;
@@ -633,7 +627,7 @@ export function ShiftDayGroup({
               const memberName = s.organizationMember
                 ? getShiftMemberDisplayName(s.organizationMember)
                 : s.title;
-              const initials = getMemberInitials(memberName);
+
               return (
                 <button
                   key={s.id}
@@ -641,33 +635,45 @@ export function ShiftDayGroup({
                   type="button"
                   title={memberName}
                   className={cn(
-                    "inline-flex items-center justify-center rounded-full h-7 w-7 text-xs font-bold transition-all cursor-pointer shrink-0",
+                    "inline-flex items-center justify-center rounded-full transition-all cursor-pointer shrink-0",
                     isActive
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 scale-[1.05] z-10"
-                      : "bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      ? "scale-[1.05] z-10 ring-2 ring-primary"
+                      : "opacity-80 hover:opacity-100"
                   )}
                 >
-                  {initials}
+                  <PersonAvatar
+                    name={memberName}
+                    userId={
+                      s.organizationMember?.user?.id ?? s.organizationMemberId
+                    }
+                    avatarUrl={s.organizationMember?.user?.avatarUrl}
+                    size="xs"
+                  />
                 </button>
               );
             })}
           </div>
         )}
         {shifts.length === 1 && (
-          <span
+          <PersonAvatar
+            name={
+              shifts[0].organizationMember
+                ? getShiftMemberDisplayName(shifts[0].organizationMember)
+                : shifts[0].title
+            }
+            userId={
+              shifts[0].organizationMember?.user?.id ??
+              shifts[0].organizationMemberId
+            }
+            avatarUrl={shifts[0].organizationMember?.user?.avatarUrl}
+            size="xs"
+            className="shrink-0 cursor-default ring-1 ring-border/40"
             title={
               shifts[0].organizationMember
                 ? getShiftMemberDisplayName(shifts[0].organizationMember)
                 : shifts[0].title
             }
-            className="inline-flex items-center justify-center rounded-full bg-muted w-7 h-7 text-[10px] font-bold border border-border/40 text-muted-foreground shrink-0 cursor-default"
-          >
-            {getMemberInitials(
-              shifts[0].organizationMember
-                ? getShiftMemberDisplayName(shifts[0].organizationMember)
-                : shifts[0].title
-            )}
-          </span>
+          />
         )}
       </div>
 

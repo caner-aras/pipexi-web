@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { MemberPositionAssignDialog } from "@/components/team-members/member-position-assign-dialog";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import type { MemberPositionHistory } from "@/types/member-position";
 import type { Position } from "@/types/position";
 import type { TeamMemberDayOff } from "@/types/team-member-day-off";
@@ -58,15 +59,6 @@ interface TeamMemberDetailsViewProps {
   positions?: Position[];
   activePosition?: MemberPositionHistory | null;
   positionHistory?: MemberPositionHistory[];
-}
-
-function getMemberInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
 }
 
 function formatMemberDate(iso: string): string {
@@ -225,8 +217,7 @@ export function TeamMemberDetailsView({
   const memberName = getShiftMemberDisplayName(teamMember.organizationMember);
   const rangeLabel = formatDateRangeLabel(fromDateKey);
   const memberPhone = teamMember.organizationMember.user.phone;
-  const memberAvatarUrl = teamMember.organizationMember.user.avatarUrl;
-  const memberInitials = getMemberInitials(memberName) || "?";
+  const memberUser = teamMember.organizationMember.user;
   const teamManager = teamMember.team.managerMember;
   const teamManagerName = teamManager
     ? getShiftMemberDisplayName(teamManager)
@@ -253,18 +244,14 @@ export function TeamMemberDetailsView({
           <div className="flex flex-col xl:flex-row xl:items-stretch">
             <div className="flex min-w-0 flex-1 flex-col gap-8 p-5 sm:p-6">
               <div className="flex gap-4 sm:gap-5">
-                {memberAvatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={memberAvatarUrl}
-                    alt={memberName}
-                    className="size-16 shrink-0 rounded-sm object-cover sm:size-[4.5rem]"
-                  />
-                ) : (
-                  <div className="flex size-16 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-xl font-semibold text-primary sm:size-[4.5rem]">
-                    {memberInitials}
-                  </div>
-                )}
+                <PersonAvatar
+                  name={memberName}
+                  userId={memberUser.id}
+                  avatarUrl={memberUser.avatarUrl}
+                  size="lg"
+                  rounded="sm"
+                  className="sm:size-[4.5rem] sm:text-2xl"
+                />
 
                 <div className="min-w-0 flex-1 space-y-3">
                   <div className="flex flex-wrap items-center gap-2">

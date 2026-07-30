@@ -43,7 +43,7 @@ import {
   formatLocalDateKey,
   getTodayDateKeyUtc,
 } from "@/lib/date-format";
-import { resolveAvatarUrl } from "@/lib/avatar";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import { getShiftMemberDisplayName } from "@/lib/shift-format";
 import {
   getWorkTaskReporterAvatarUrl,
@@ -147,20 +147,6 @@ function getCommentAuthorName(comment: WorkTaskComment): string {
 
   const name = `${user.firstName} ${user.lastName}`.trim();
   return name || user.email;
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-
-  if (parts.length === 0) {
-    return "?";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
 function CommentsSkeleton() {
@@ -345,22 +331,16 @@ function TaskCommentsSection({
               const jobTitle = comment.member?.jobTitle;
               const authorTeamMemberId =
                 comment.member?.teamMemberId ?? comment.teamMemberId;
-              const avatarUrl = comment.member?.user?.avatarUrl ?? null;
 
               return (
                 <div key={comment.id} className="flex gap-3">
-                  <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-xs font-semibold text-primary ring-2 ring-background">
-                    {avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={avatarUrl}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      getInitials(authorName)
-                    )}
-                  </div>
+                  <PersonAvatar
+                    name={authorName}
+                    userId={comment.member?.user?.id}
+                    avatarUrl={comment.member?.user?.avatarUrl}
+                    size="sm"
+                    className="ring-2 ring-background"
+                  />
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                       {authorTeamMemberId ? (
@@ -958,15 +938,7 @@ export function TeamMemberTaskDetail({
   const assignedName = assignedMember
     ? getShiftMemberDisplayName(assignedMember.organizationMember)
     : null;
-
-  const assignedAvatarUrl =
-    assignedMember?.organizationMember.user?.avatarUrl ?? null;
   const reporterLabel = getWorkTaskReporterLabel(task, assignableMembers);
-  const reporterUserId = getWorkTaskReporterUserId(task);
-  const reporterAvatarUrl = resolveAvatarUrl(
-    reporterUserId,
-    getWorkTaskReporterAvatarUrl(task)
-  );
   const hasReporter = Boolean(task.reporterUserId || task.reporter);
   const dueValue = task.dueAt
     ? `${overdue ? "Overdue · " : ""}${formatDateTime(task.dueAt)}`
@@ -1076,18 +1048,14 @@ export function TeamMemberTaskDetail({
                 <MetaRow icon={UserRound} label="Assignee">
                   {task.assignedToTeamMemberId ? (
                     <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
-                        {assignedAvatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={assignedAvatarUrl}
-                            alt=""
-                            className="size-full object-cover"
-                          />
-                        ) : (
-                          getInitials(assignedName ?? "U")
-                        )}
-                      </div>
+                      <PersonAvatar
+                        name={assignedName ?? "Unassigned"}
+                        userId={assignedMember?.organizationMember.user.id}
+                        avatarUrl={
+                          assignedMember?.organizationMember.user.avatarUrl
+                        }
+                        size="sm"
+                      />
                       <Link
                         href={`/team-members/${task.assignedToTeamMemberId}`}
                         className="font-medium underline-offset-4 hover:underline"
@@ -1103,18 +1071,12 @@ export function TeamMemberTaskDetail({
                 {hasReporter ? (
                   <MetaRow icon={PenLine} label="Reporter">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-violet-500/10 text-[11px] font-semibold text-violet-600 dark:text-violet-400">
-                        {reporterAvatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={reporterAvatarUrl}
-                            alt=""
-                            className="size-full object-cover"
-                          />
-                        ) : (
-                          getInitials(reporterLabel ?? "R")
-                        )}
-                      </div>
+                      <PersonAvatar
+                        name={reporterLabel ?? "Unknown"}
+                        userId={getWorkTaskReporterUserId(task)}
+                        avatarUrl={getWorkTaskReporterAvatarUrl(task)}
+                        size="sm"
+                      />
                       <span className="font-medium">
                         {reporterLabel ?? "Unknown"}
                       </span>

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import {
@@ -128,20 +129,6 @@ function formatShiftTime(time: string): string {
   }
 
   return time;
-}
-
-function getMemberInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-
-  if (parts.length === 0) {
-    return "?";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
 function getSignalToneClass(tone: string): string {
@@ -417,9 +404,12 @@ function ScheduleAssignmentCard({
         className="flex items-center gap-3 px-3.5 py-3 transition-colors hover:bg-muted/50"
         onClick={onNavigate}
       >
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-xs font-semibold tracking-wide text-foreground ring-1 ring-border/60">
-          {getMemberInitials(assignment.memberName)}
-        </div>
+        <PersonAvatar
+          name={assignment.memberName}
+          userId={assignment.organizationMemberId}
+          size="md"
+          className="ring-1 ring-border/60"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <p className="truncate text-sm font-medium">{assignment.memberName}</p>
@@ -670,13 +660,14 @@ function ScheduleFeed({
                     <div className="mt-3 flex items-center gap-3">
                       <div className="flex -space-x-2">
                         {previewAssignments.map((assignment) => (
-                          <div
+                          <PersonAvatar
                             key={assignment.shiftId}
-                            className="flex size-8 items-center border border-border/50 justify-center rounded-full bg-background text-xs font-semibold tracking-wide ring-2 ring-muted/35"
+                            name={assignment.memberName}
+                            userId={assignment.organizationMemberId}
+                            size="xs"
+                            className="ring-2 ring-muted/35"
                             title={assignment.memberName}
-                          >
-                            {getMemberInitials(assignment.memberName)}
-                          </div>
+                          />
                         ))}
                         {extraCount > 0 ? (
                           <div className="flex size-8 items-center justify-center rounded-full bg-background text-xs font-medium text-muted-foreground ring-2 ring-muted/35">
