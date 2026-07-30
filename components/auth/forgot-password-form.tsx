@@ -38,8 +38,19 @@ export function ForgotPasswordForm() {
   async function onSubmit(values: ForgotPasswordFormValues) {
     setError(null);
     try {
-      // Mocking reset email action. In future, this will trigger backend endpoint.
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      const body = (await response.json()) as { message?: string };
+
+      if (!response.ok) {
+        setError(body.message ?? "Failed to send reset email. Please try again.");
+        return;
+      }
+
       setResetEmail(values.email);
       setIsSuccess(true);
     } catch {

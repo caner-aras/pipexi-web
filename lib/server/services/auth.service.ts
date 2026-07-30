@@ -41,6 +41,14 @@ export async function registerWithBackend(
   });
 }
 
+export async function requestPasswordReset(email: string): Promise<void> {
+  await backendFetch<null>("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+    skipAuth: true,
+  });
+}
+
 export async function getCurrentUser(): Promise<AuthUser> {
   return backendFetch<AuthUser>("/auth/me");
 }
