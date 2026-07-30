@@ -195,6 +195,24 @@ export function TeamMembersTable({
                         >
                           Edit member
                         </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            router.push(
+                              buildTeamMemberProfileHref(member.id, undefined, "profile")
+                            )
+                          }
+                        >
+                          Personal profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            router.push(
+                              buildTeamMemberProfileHref(member.id, undefined, "payments")
+                            )
+                          }
+                        >
+                          Payments
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => handleOpenDelete(member)}

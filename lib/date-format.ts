@@ -54,6 +54,10 @@ export function formatDateRangeLabel(fromDateKey: string, days = 7): string {
 export function parseDateKey(dateKey: string): Date {
   const [year, month, day] = dateKey.split("-").map(Number);
 
+  if (!year || !month || !day) {
+    return new Date(NaN);
+  }
+
   return new Date(year, month - 1, day);
 }
 
@@ -65,8 +69,19 @@ export function formatLocalDateKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-export function formatDatePickerLabel(dateKey: string): string {
+export function formatDatePickerLabel(
+  dateKey: string,
+  emptyLabel = "Select date"
+): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey.trim())) {
+    return emptyLabel;
+  }
+
   const date = new Date(`${dateKey}T12:00:00Z`);
+
+  if (Number.isNaN(date.getTime())) {
+    return emptyLabel;
+  }
 
   return new Intl.DateTimeFormat("en-US", {
     month: "short",

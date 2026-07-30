@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { TeamMemberDayOffsPanel } from "@/components/team-members/team-member-day-offs-panel";
+import { TeamMemberPaymentsPanel } from "@/components/team-members/team-member-payments-panel";
+import { TeamMemberProfilePanel } from "@/components/team-members/team-member-profile-panel";
 import { TeamMemberShiftsMasterDetail } from "@/components/team-members/team-member-shifts-master-detail";
 import { TeamMemberTasksPanel } from "@/components/team-members/team-member-tasks-panel";
 import { TeamMemberWorkSummaryReport } from "@/components/team-members/team-member-work-summary-report";
@@ -45,6 +47,10 @@ import { Button } from "@/components/ui/button";
 import { MemberPositionAssignDialog } from "@/components/team-members/member-position-assign-dialog";
 import { PersonAvatar } from "@/components/ui/person-avatar";
 import type { MemberPositionHistory } from "@/types/member-position";
+import type {
+  OrganizationMemberPayment,
+  OrganizationMemberProfile,
+} from "@/types/organization-member-profile";
 import type { Position } from "@/types/position";
 import type { TeamMemberDayOff } from "@/types/team-member-day-off";
 import type { TeamMemberDetails } from "@/types/team-member-details";
@@ -53,12 +59,20 @@ interface TeamMemberDetailsViewProps {
   teamMemberId: string;
   fromDateKey: string;
   focusShiftId?: string | null;
-  defaultTab?: "work-summary" | "schedule" | "day-offs" | "position-history";
+  defaultTab?:
+    | "work-summary"
+    | "schedule"
+    | "day-offs"
+    | "position-history"
+    | "profile"
+    | "payments";
   details: TeamMemberDetails;
   dayOffs: TeamMemberDayOff[];
   positions?: Position[];
   activePosition?: MemberPositionHistory | null;
   positionHistory?: MemberPositionHistory[];
+  profile?: OrganizationMemberProfile | null;
+  payments?: OrganizationMemberPayment[];
 }
 
 function formatMemberDate(iso: string): string {
@@ -208,6 +222,8 @@ export function TeamMemberDetailsView({
   positions = [],
   activePosition = null,
   positionHistory = [],
+  profile = null,
+  payments = [],
 }: TeamMemberDetailsViewProps) {
   const router = useRouter();
   const [organizationDrawerOpen, setOrganizationDrawerOpen] = useState(false);
@@ -441,6 +457,12 @@ export function TeamMemberDetailsView({
           <TabsTrigger value="position-history" className="flex-none px-3">
             Position history
           </TabsTrigger>
+          <TabsTrigger value="profile" className="flex-none px-3">
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="flex-none px-3">
+            Payments
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="work-summary" keepMounted>
@@ -539,6 +561,22 @@ export function TeamMemberDetailsView({
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="profile" className="min-h-[20rem]">
+          <TeamMemberProfilePanel
+            organizationId={organizationId}
+            organizationMemberId={teamMember.organizationMember.id}
+            profile={profile}
+          />
+        </TabsContent>
+
+        <TabsContent value="payments" className="min-h-[20rem]">
+          <TeamMemberPaymentsPanel
+            organizationId={organizationId}
+            organizationMemberId={teamMember.organizationMember.id}
+            payments={payments}
+          />
         </TabsContent>
       </Tabs>
 

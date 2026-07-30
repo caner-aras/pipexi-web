@@ -14,6 +14,10 @@ import {
   getTeamMemberDayOffs,
   getTeamMemberDetails,
 } from "@/lib/server/services/team-member.service";
+import {
+  getOrganizationMemberPayments,
+  getOrganizationMemberProfile,
+} from "@/lib/server/services/organization-member-profile.service";
 import { cn } from "@/lib/utils";
 import {
   getActiveMemberPosition,
@@ -21,6 +25,10 @@ import {
 } from "@/lib/server/services/member-position.service";
 import { getOrganizationPositions } from "@/lib/server/services/position.service";
 import type { MemberPositionHistory } from "@/types/member-position";
+import type {
+  OrganizationMemberPayment,
+  OrganizationMemberProfile,
+} from "@/types/organization-member-profile";
 import type { Position } from "@/types/position";
 import type { TeamMemberDayOff } from "@/types/team-member-day-off";
 import type { TeamMemberDetails } from "@/types/team-member-details";
@@ -34,15 +42,25 @@ interface TeamMemberPageProps {
   }>;
 }
 
+type TeamMemberTab =
+  | "work-summary"
+  | "schedule"
+  | "day-offs"
+  | "position-history"
+  | "profile"
+  | "payments";
+
 function resolveDefaultTab(
   tab: string | undefined,
   shiftId: string | undefined
-): "work-summary" | "schedule" | "day-offs" | "position-history" {
+): TeamMemberTab {
   if (
     tab === "work-summary" ||
     tab === "schedule" ||
     tab === "day-offs" ||
-    tab === "position-history"
+    tab === "position-history" ||
+    tab === "profile" ||
+    tab === "payments"
   ) {
     return tab;
   }
@@ -69,6 +87,8 @@ export default async function TeamMemberPage({
   let positions: Position[] = [];
   let activePosition: MemberPositionHistory | null = null;
   let positionHistory: MemberPositionHistory[] = [];
+  let profile: OrganizationMemberProfile | null = null;
+  let payments: OrganizationMemberPayment[] = [];
   let error: string | null = null;
 
   try {
@@ -81,14 +101,26 @@ export default async function TeamMemberPage({
     dayOffs = loadedDayOffs;
 
     if (details) {
-      const [orgPositions, activePos, posHistory] = await Promise.all([
-        getOrganizationPositions(details.organizationId),
-        getActiveMemberPosition(details.teamMember.organizationMember.id),
-        getMemberPositionHistory(details.teamMember.organizationMember.id),
-      ]);
+      const organizationMemberId = details.teamMember.organizationMember.id;
+      const [orgPositions, activePos, posHistory, memberProfile, memberPayments] =
+        await Promise.all([
+          getOrganizationPositions(details.organizationId),
+          getActiveMemberPosition(organizationMemberId),
+          getMemberPositionHistory(organizationMemberId),
+          getOrganizationMemberProfile(
+            details.organizationId,
+            organizationMemberId
+          ),
+          getOrganizationMemberPayments(
+            details.organizationId,
+            organizationMemberId
+          ),
+        ]);
       positions = orgPositions;
       activePosition = activePos;
       positionHistory = posHistory;
+      profile = memberProfile;
+      payments = memberPayments;
     }
   } catch (err) {
     if (err instanceof BackendApiError) {
@@ -100,7 +132,7 @@ export default async function TeamMemberPage({
 
   const memberName = details
     ? `${details.teamMember.organizationMember.user.firstName} ${details.teamMember.organizationMember.user.lastName}`.trim() ||
-    details.teamMember.organizationMember.user.email
+      details.teamMember.organizationMember.user.email
     : "Team member";
 
   const teamId = details?.teamMember.team.id;
@@ -141,6 +173,8 @@ export default async function TeamMemberPage({
             positions={positions}
             activePosition={activePosition}
             positionHistory={positionHistory}
+            profile={profile}
+            payments={payments}
           />
         ) : null}
       </div>

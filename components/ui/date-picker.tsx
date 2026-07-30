@@ -50,7 +50,8 @@ function DatePicker({
 
   const rootRef = React.useRef<HTMLDivElement>(null)
   const popupRef = React.useRef<HTMLDivElement>(null)
-  const selectedDate = parseDateKey(value)
+  const parsedDate = parseDateKey(value)
+  const selectedDate = Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate
   const canPortal = typeof document !== "undefined"
 
   const updatePosition = React.useCallback(() => {
