@@ -51,10 +51,10 @@ export function TeamMemberList({ members }: TeamMemberListProps) {
               <ItemTitle>
                 <Link
                   href={profileHref}
-                  className="inline-flex items-center gap-1 transition-opacity hover:opacity-80"
+                  className="inline-flex items-center gap-2 text-left transition-opacity hover:opacity-80 hover:underline"
                 >
+                  <ArrowUpRight className="size-4 shrink-0" />
                   {displayName}
-                  <ArrowUpRight className="size-3.5 text-muted-foreground" />
                 </Link>
               </ItemTitle>
               <ItemDescription>

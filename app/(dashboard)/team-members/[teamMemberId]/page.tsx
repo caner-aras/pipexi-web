@@ -18,6 +18,7 @@ import {
   getOrganizationMemberPayments,
   getOrganizationMemberProfile,
 } from "@/lib/server/services/organization-member-profile.service";
+import { getOrganization } from "@/lib/server/services/organization.service";
 import { cn } from "@/lib/utils";
 import {
   getActiveMemberPosition,
@@ -89,6 +90,7 @@ export default async function TeamMemberPage({
   let positionHistory: MemberPositionHistory[] = [];
   let profile: OrganizationMemberProfile | null = null;
   let payments: OrganizationMemberPayment[] = [];
+  let organizationCurrency = "GBP";
   let error: string | null = null;
 
   try {
@@ -102,25 +104,33 @@ export default async function TeamMemberPage({
 
     if (details) {
       const organizationMemberId = details.teamMember.organizationMember.id;
-      const [orgPositions, activePos, posHistory, memberProfile, memberPayments] =
-        await Promise.all([
-          getOrganizationPositions(details.organizationId),
-          getActiveMemberPosition(organizationMemberId),
-          getMemberPositionHistory(organizationMemberId),
-          getOrganizationMemberProfile(
-            details.organizationId,
-            organizationMemberId
-          ),
-          getOrganizationMemberPayments(
-            details.organizationId,
-            organizationMemberId
-          ),
-        ]);
+      const [
+        orgPositions,
+        activePos,
+        posHistory,
+        memberProfile,
+        memberPayments,
+        organization,
+      ] = await Promise.all([
+        getOrganizationPositions(details.organizationId),
+        getActiveMemberPosition(organizationMemberId),
+        getMemberPositionHistory(organizationMemberId),
+        getOrganizationMemberProfile(
+          details.organizationId,
+          organizationMemberId
+        ),
+        getOrganizationMemberPayments(
+          details.organizationId,
+          organizationMemberId
+        ),
+        getOrganization(details.organizationId),
+      ]);
       positions = orgPositions;
       activePosition = activePos;
       positionHistory = posHistory;
       profile = memberProfile;
       payments = memberPayments;
+      organizationCurrency = organization.currency || "USD";
     }
   } catch (err) {
     if (err instanceof BackendApiError) {
@@ -132,7 +142,7 @@ export default async function TeamMemberPage({
 
   const memberName = details
     ? `${details.teamMember.organizationMember.user.firstName} ${details.teamMember.organizationMember.user.lastName}`.trim() ||
-      details.teamMember.organizationMember.user.email
+    details.teamMember.organizationMember.user.email
     : "Team member";
 
   const teamId = details?.teamMember.team.id;
@@ -175,6 +185,7 @@ export default async function TeamMemberPage({
             positionHistory={positionHistory}
             profile={profile}
             payments={payments}
+            organizationCurrency={organizationCurrency}
           />
         ) : null}
       </div>

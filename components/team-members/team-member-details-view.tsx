@@ -1,13 +1,13 @@
 "use client";
 
 import {
+  ArrowUpRight,
   Briefcase,
   CalendarDays,
   CalendarOff,
   CheckSquare,
   ChevronRight,
   Clock3,
-  ExternalLink,
   Users,
 } from "lucide-react";
 import { NavLink as Link } from "@/components/ui/nav-link";
@@ -73,6 +73,7 @@ interface TeamMemberDetailsViewProps {
   positionHistory?: MemberPositionHistory[];
   profile?: OrganizationMemberProfile | null;
   payments?: OrganizationMemberPayment[];
+  organizationCurrency?: string | null;
 }
 
 function formatMemberDate(iso: string): string {
@@ -121,10 +122,10 @@ function MemberInfoItem({
         {href ? (
           <Link
             href={href}
-            className="inline-flex max-w-full items-center gap-1.5 text-sm text-foreground underline-offset-4 hover:underline"
+            className="inline-flex max-w-full items-center gap-2 text-left text-sm text-foreground transition-opacity hover:opacity-80 hover:underline"
           >
+            <ArrowUpRight className="size-4 shrink-0" />
             <span className="truncate">{value}</span>
-            <ExternalLink className="size-3.5 shrink-0 text-muted-foreground" />
           </Link>
         ) : onClick ? (
           <button
@@ -224,6 +225,7 @@ export function TeamMemberDetailsView({
   positionHistory = [],
   profile = null,
   payments = [],
+  organizationCurrency = "USD",
 }: TeamMemberDetailsViewProps) {
   const router = useRouter();
   const [organizationDrawerOpen, setOrganizationDrawerOpen] = useState(false);
@@ -576,6 +578,7 @@ export function TeamMemberDetailsView({
             organizationId={organizationId}
             organizationMemberId={teamMember.organizationMember.id}
             payments={payments}
+            defaultCurrency={organizationCurrency}
           />
         </TabsContent>
       </Tabs>

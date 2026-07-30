@@ -3,7 +3,7 @@
 import { NavLink as Link } from "@/components/ui/nav-link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { MoreHorizontalIcon, Search, UsersRound } from "lucide-react";
+import { ArrowUpRight, MoreHorizontalIcon, Search, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -42,7 +42,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getTeamMemberLookupKey } from "@/lib/date-format";
 import {
   buildRecordStatusFilterOptions,
   matchesRecordStatusFilter,
@@ -87,16 +86,12 @@ function matchesTeamSearch(
 
 interface TeamsViewProps {
   teams: Team[];
-  teamMemberIdByKey?: Record<string, string>;
-  memberCountByTeamId?: Record<string, number>;
   onEditTeam?: (team: Team) => void;
   onDuplicateTeam?: (team: Team) => void;
 }
 
 export function TeamsView({
   teams,
-  teamMemberIdByKey = {},
-  memberCountByTeamId = {},
   onEditTeam,
   onDuplicateTeam,
 }: TeamsViewProps) {
@@ -232,14 +227,9 @@ export function TeamsView({
             </TableHeader>
             <TableBody>
               {filteredTeams.map((team) => {
-                const memberCount = memberCountByTeamId[team.id] ?? 0;
-                const managerTeamMemberId = team.managerMember
-                  ? teamMemberIdByKey[
-                  getTeamMemberLookupKey(team.id, team.managerMember.id)
-                  ] ?? null
-                  : null;
-                const managerHref = managerTeamMemberId
-                  ? buildTeamMemberProfileHref(managerTeamMemberId)
+                const memberCount = team.memberCount ?? 0;
+                const managerHref = team.managerTeamMemberId
+                  ? buildTeamMemberProfileHref(team.managerTeamMemberId)
                   : null;
                 const teamHref = `/teams/${team.id}`;
 
@@ -248,19 +238,21 @@ export function TeamsView({
                     <TableCell className="font-medium">
                       <Link
                         href={teamHref}
-                        className="inline-flex items-center gap-2 transition-opacity hover:opacity-80"
+                        className="inline-flex max-w-full items-center gap-2 text-left transition-opacity hover:opacity-80 hover:underline"
                       >
-                        {team.name}
+                        <ArrowUpRight className="size-4 shrink-0" />
+                        <span className="truncate">{team.name}</span>
                       </Link>
                     </TableCell>
                     <TableCell>
                       {managerHref ? (
                         <Link
                           href={managerHref}
-                          className="transition-opacity hover:opacity-80"
+                          className="inline-flex max-w-full items-center gap-2 text-left transition-opacity hover:opacity-80 hover:underline"
                           onClick={(event) => event.stopPropagation()}
                         >
-                          {getManagerLabel(team)}
+                          <ArrowUpRight className="size-4 shrink-0" />
+                          <span className="truncate">{getManagerLabel(team)}</span>
                         </Link>
                       ) : (
                         getManagerLabel(team)

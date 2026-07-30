@@ -1,10 +1,10 @@
 "use client";
 
 import {
+  ArrowUpRight,
   CalendarClock,
   CheckSquare,
   ChevronRight,
-  ExternalLink,
   Plus,
   UserRound,
 } from "lucide-react";
@@ -625,9 +625,9 @@ export function TeamMemberTasksPageContent({
               Board for
               <Link
                 href={`/team-members/${defaultAssignedToTeamMemberId}`}
-                className="inline-flex items-center gap-1 text-foreground underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-2 text-left text-foreground transition-opacity hover:opacity-80 hover:underline"
               >
-                <ExternalLink className="size-3.5 shrink-0 text-muted-foreground" />
+                <ArrowUpRight className="size-4 shrink-0" />
                 {memberName}
               </Link>
             </p>

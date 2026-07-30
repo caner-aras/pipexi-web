@@ -21,12 +21,13 @@ export function NavLink({
 }: ComponentProps<typeof Link>) {
   const path = getPath(href);
   const { navigatingTo, setNavigatingTo } = useNavigationLoading();
-  const isLoading = path && path !== '#' && navigatingTo === path;
+  const isLoading = Boolean(path && path !== '#' && navigatingTo === path);
 
   return (
     <Link
       href={href}
-      className={cn('flex items-center gap-2', className)}
+      className={cn('relative inline-flex items-center gap-2', className)}
+      aria-busy={isLoading || undefined}
       onClick={(e) => {
         if (path && path !== '#') setNavigatingTo(path);
         onClick?.(e);
@@ -34,12 +35,12 @@ export function NavLink({
       {...props}
     >
       {children}
-      {isLoading && (
+      {isLoading ? (
         <Loader2
-          className="size-4 shrink-0 animate-spin text-muted-foreground"
+          className="pointer-events-none absolute top-1/2 left-[calc(100%+0.375rem)] size-3.5 shrink-0 -translate-y-1/2 animate-spin text-muted-foreground"
           aria-hidden
         />
-      )}
+      ) : null}
     </Link>
   );
 }

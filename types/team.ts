@@ -6,6 +6,8 @@ export interface Team {
   name: string;
   managerMemberId: string;
   managerMember?: OrganizationMember;
+  memberCount?: number;
+  managerTeamMemberId?: string | null;
   status: string;
   createdAt: string;
   updatedAt: string | null;

@@ -17,8 +17,6 @@ interface TeamsPageContentProps {
   organizationName: string | null;
   teams: Team[];
   members: OrganizationMember[];
-  teamMemberIdByKey: Record<string, string>;
-  memberCountByTeamId: Record<string, number>;
   defaultManagerMemberId: string | null;
   error: string | null;
 }
@@ -28,8 +26,6 @@ export function TeamsPageContent({
   organizationName,
   teams,
   members,
-  teamMemberIdByKey,
-  memberCountByTeamId,
   defaultManagerMemberId,
   error,
 }: TeamsPageContentProps) {
@@ -120,8 +116,6 @@ export function TeamsPageContent({
         ) : (
           <TeamsView
             teams={teams}
-            teamMemberIdByKey={teamMemberIdByKey}
-            memberCountByTeamId={memberCountByTeamId}
             onEditTeam={handleEditTeam}
             onDuplicateTeam={handleDuplicateTeam}
           />

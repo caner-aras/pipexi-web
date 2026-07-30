@@ -3,7 +3,7 @@
 import { NavLink as Link } from "@/components/ui/nav-link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MoreHorizontalIcon, Users } from "lucide-react";
+import { ArrowUpRight, MoreHorizontalIcon, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { EditTeamMemberDrawer } from "@/components/organizations/edit-team-member-drawer";
@@ -155,9 +155,10 @@ export function TeamMembersTable({
                     <div className="flex items-center gap-2">
                       <Link
                         href={profileHref}
-                        className="transition-opacity hover:opacity-80"
+                        className="inline-flex max-w-full items-center gap-2 text-left transition-opacity hover:opacity-80 hover:underline"
                       >
-                        {displayName}
+                        <ArrowUpRight className="size-4 shrink-0" />
+                        <span className="truncate">{displayName}</span>
                       </Link>
                       {isManager ? (
                         <Badge variant="outline" className="text-[10px]">

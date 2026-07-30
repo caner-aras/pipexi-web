@@ -39,6 +39,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -50,7 +51,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { POPULAR_CURRENCIES } from "@/lib/organization-currencies";
+import {
+  POPULAR_CURRENCIES,
+  type OrganizationCurrencyOption,
+} from "@/lib/organization-currencies";
 import { formatLocalDateKey, getTodayDateKeyUtc } from "@/lib/date-format";
 import type { OrganizationMemberPayment } from "@/types/organization-member-profile";
 
@@ -61,6 +65,21 @@ const METHOD_OPTIONS = [
   { value: "card", label: "Card" },
   { value: "other", label: "Other" },
 ] as const;
+
+function resolveCurrencyOption(code: string): OrganizationCurrencyOption {
+  const normalized = code.trim().toUpperCase() || "GBP";
+  return (
+    POPULAR_CURRENCIES.find((item) => item.code === normalized) ?? {
+      code: normalized,
+      name: normalized,
+      symbol: normalized,
+    }
+  );
+}
+
+function formatCurrencyOption(item: OrganizationCurrencyOption): string {
+  return `${item.code} · ${item.name}`;
+}
 
 interface TeamMemberPaymentsPanelProps {
   organizationId: string;
@@ -130,6 +149,15 @@ export function TeamMemberPaymentsPanel({
 }: TeamMemberPaymentsPanelProps) {
   const router = useRouter();
   const currencyFallback = defaultCurrency?.trim().toUpperCase() || "USD";
+  const organizationCurrency = useMemo(
+    () => resolveCurrencyOption(currencyFallback),
+    [currencyFallback]
+  );
+  const otherCurrencies = useMemo(
+    () =>
+      POPULAR_CURRENCIES.filter((item) => item.code !== organizationCurrency.code),
+    [organizationCurrency.code]
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPayment, setEditingPayment] =
     useState<OrganizationMemberPayment | null>(null);
@@ -142,12 +170,17 @@ export function TeamMemberPaymentsPanel({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const currencyItems = useMemo(
-    () =>
-      POPULAR_CURRENCIES.map((item) => ({
+    () => [
+      {
+        value: organizationCurrency.code,
+        label: `${formatCurrencyOption(organizationCurrency)} (Organization)`,
+      },
+      ...otherCurrencies.map((item) => ({
         value: item.code,
-        label: `${item.code} · ${item.name}`,
+        label: formatCurrencyOption(item),
       })),
-    []
+    ],
+    [organizationCurrency, otherCurrencies]
   );
 
   const methodItems = useMemo(
@@ -349,7 +382,7 @@ export function TeamMemberPaymentsPanel({
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {editingPayment ? "Edit payment" : "Add payment"}
@@ -392,9 +425,21 @@ export function TeamMemberPaymentsPanel({
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  {POPULAR_CURRENCIES.map((item) => (
-                    <SelectItem key={item.code} value={item.code}>
-                      {item.code} · {item.name}
+                  <SelectItem
+                    value={organizationCurrency.code}
+                    label={`${formatCurrencyOption(organizationCurrency)} (Default)`}
+                  >
+                    {formatCurrencyOption(organizationCurrency)}
+                    <span className="text-muted-foreground"> · Default</span>
+                  </SelectItem>
+                  {otherCurrencies.length > 0 ? <SelectSeparator /> : null}
+                  {otherCurrencies.map((item) => (
+                    <SelectItem
+                      key={item.code}
+                      value={item.code}
+                      label={formatCurrencyOption(item)}
+                    >
+                      {formatCurrencyOption(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>
