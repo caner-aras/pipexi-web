@@ -6,6 +6,7 @@ import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/types/auth";
 const LOGIN_PATH = "/login";
 const REGISTER_PATH = "/register";
 const FORGOT_PASSWORD_PATH = "/forgot-password";
+const RESET_PASSWORD_PATH = "/reset-password";
 const ONBOARDING_PATH = "/onboarding";
 const DASHBOARD_PATH = "/dashboard";
 
@@ -35,6 +36,15 @@ export function proxy(request: NextRequest) {
   if (pathname.startsWith(ONBOARDING_PATH)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+    }
+
+    return NextResponse.next();
+  }
+
+  // Recovery session must reach this page while authenticated.
+  if (pathname.startsWith(RESET_PASSWORD_PATH)) {
+    if (!isAuthenticated) {
+      return NextResponse.redirect(new URL(FORGOT_PASSWORD_PATH, request.url));
     }
 
     return NextResponse.next();

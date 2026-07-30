@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
 import { LandingPage } from "@/components/landing/landing-page";
+import { AuthHashRedirect } from "@/components/auth/auth-hash-redirect";
 import { getCurrentUser } from "@/lib/server/services/auth.service";
 import { ACCESS_TOKEN_COOKIE, type AuthUser } from "@/types/auth";
 
@@ -27,5 +28,10 @@ export default async function HomePage() {
     }
   }
 
-  return <LandingPage user={user} />;
+  return (
+    <>
+      <AuthHashRedirect />
+      <LandingPage user={user} />
+    </>
+  );
 }

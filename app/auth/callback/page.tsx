@@ -15,7 +15,6 @@ export default function AuthCallbackPage() {
     let cancelled = false;
 
     const run = async () => {
-      // Defer so setState is not synchronous inside the effect body.
       await Promise.resolve();
       if (cancelled) {
         return;
@@ -32,6 +31,7 @@ export default function AuthCallbackPage() {
       const refreshToken = params.get("refresh_token");
       const expiresInRaw = params.get("expires_in");
       const expiresIn = expiresInRaw ? Number(expiresInRaw) : null;
+      const type = params.get("type");
 
       if (!accessToken) {
         setError("No access token found in auth response.");
@@ -53,6 +53,15 @@ export default function AuthCallbackPage() {
 
         if (!sessionRes.ok) {
           throw new Error("Failed to set session cookie.");
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        if (type === "recovery") {
+          router.replace("/reset-password");
+          return;
         }
 
         const payloadJson = decodeJwtPayload(accessToken);
