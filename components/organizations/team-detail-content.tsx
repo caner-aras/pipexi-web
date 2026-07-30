@@ -96,6 +96,7 @@ export function TeamDetailContent({
           <p className="text-sm text-destructive">{error}</p>
         ) : (
           <TeamMembersTable
+            organizationId={organizationId}
             members={members}
             managerMemberId={team.managerMemberId}
           />

@@ -41,11 +41,13 @@ import { buildTeamMemberProfileHref } from "@/lib/team-member-navigation";
 import type { TeamMember } from "@/types/team";
 
 interface TeamMembersTableProps {
+  organizationId: string;
   members: TeamMember[];
   managerMemberId?: string | null;
 }
 
 export function TeamMembersTable({
+  organizationId,
   members,
   managerMemberId = null,
 }: TeamMembersTableProps) {
@@ -55,6 +57,10 @@ export function TeamMembersTable({
   const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [memberToResetPassword, setMemberToResetPassword] =
+    useState<TeamMember | null>(null);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   function handleEditMember(member: TeamMember) {
     setEditingMember(member);
@@ -79,6 +85,19 @@ export function TeamMembersTable({
 
     if (!open) {
       setMemberToDelete(null);
+    }
+  }
+
+  function handleOpenResetPassword(member: TeamMember) {
+    setMemberToResetPassword(member);
+    setResetPasswordDialogOpen(true);
+  }
+
+  function handleResetPasswordDialogOpenChange(open: boolean) {
+    setResetPasswordDialogOpen(open);
+
+    if (!open) {
+      setMemberToResetPassword(null);
     }
   }
 
@@ -113,6 +132,36 @@ export function TeamMembersTable({
     }
   }
 
+  async function handleConfirmResetPassword() {
+    if (!memberToResetPassword) {
+      return;
+    }
+
+    setIsResettingPassword(true);
+
+    try {
+      const response = await fetch(
+        `/api/organizations/${organizationId}/members/${memberToResetPassword.organizationMember.id}/reset-password`,
+        { method: "POST" }
+      );
+
+      const body = (await response.json()) as { message?: string };
+
+      if (!response.ok) {
+        toast.error(body.message ?? "Failed to send password reset link");
+        return;
+      }
+
+      toast.success("Reset link sent if the account exists.");
+      setResetPasswordDialogOpen(false);
+      setMemberToResetPassword(null);
+    } catch {
+      toast.error("Failed to send password reset link");
+    } finally {
+      setIsResettingPassword(false);
+    }
+  }
+
   if (members.length === 0) {
     return (
       <EmptyState
@@ -126,6 +175,13 @@ export function TeamMembersTable({
   const memberToDeleteName = memberToDelete
     ? getShiftMemberDisplayName(memberToDelete.organizationMember)
     : null;
+
+  const memberToResetPasswordName = memberToResetPassword
+    ? getShiftMemberDisplayName(memberToResetPassword.organizationMember)
+    : null;
+
+  const memberToResetPasswordEmail =
+    memberToResetPassword?.organizationMember.user.email ?? null;
 
   return (
     <>
@@ -214,6 +270,11 @@ export function TeamMembersTable({
                         >
                           Payments
                         </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleOpenResetPassword(member)}
+                        >
+                          Reset password
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => handleOpenDelete(member)}
@@ -256,6 +317,33 @@ export function TeamMembersTable({
               disabled={isDeleting}
             >
               {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={resetPasswordDialogOpen}
+        onOpenChange={handleResetPasswordDialogOpenChange}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset password?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {memberToResetPasswordName && memberToResetPasswordEmail
+                ? `Send a password reset link to ${memberToResetPasswordName} (${memberToResetPasswordEmail})?`
+                : "Send a password reset link to this member?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isResettingPassword}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void handleConfirmResetPassword()}
+              disabled={isResettingPassword}
+            >
+              {isResettingPassword ? "Sending..." : "Send reset link"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
