@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { isAccessTokenValid } from "@/lib/auth/jwt";
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/types/auth";
 
 const LOGIN_PATH = "/login";
@@ -7,11 +8,20 @@ const REGISTER_PATH = "/register";
 const FORGOT_PASSWORD_PATH = "/forgot-password";
 const DASHBOARD_PATH = "/dashboard";
 
+function hasValidSession(request: NextRequest): boolean {
+  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  if (accessToken && isAccessTokenValid(accessToken)) {
+    return true;
+  }
+
+  // Access missing/expired but refresh present → recoverable session.
+  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+  return Boolean(refreshToken);
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hasAccessToken = !!request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
-  const hasRefreshToken = !!request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
-  const isAuthenticated = hasAccessToken || hasRefreshToken;
+  const isAuthenticated = hasValidSession(request);
 
   if (pathname.startsWith("/api") || pathname.startsWith("/auth")) {
     return NextResponse.next();

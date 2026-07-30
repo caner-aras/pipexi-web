@@ -7,6 +7,8 @@ import type {
   LoginTokenData,
   RegisterCredentials,
   RegisterResponse,
+  SyncProfileInput,
+  SyncProfileResponse,
 } from "@/types/auth";
 
 export async function loginWithBackend(
@@ -41,4 +43,13 @@ export async function registerWithBackend(
 
 export async function getCurrentUser(): Promise<AuthUser> {
   return backendFetch<AuthUser>("/auth/me");
+}
+
+export async function syncProfileWithBackend(
+  input: SyncProfileInput
+): Promise<SyncProfileResponse> {
+  return backendFetch<SyncProfileResponse>("/auth/sync", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }

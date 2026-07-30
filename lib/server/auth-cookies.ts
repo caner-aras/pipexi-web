@@ -2,6 +2,7 @@ import "server-only";
 
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
+import { getJwtExpiresInSeconds } from "@/lib/auth/jwt";
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/types/auth";
 
 export const DEFAULT_ACCESS_TOKEN_MAX_AGE_SECONDS = 60 * 60;
@@ -27,27 +28,6 @@ export function getAccessTokenMaxAgeSeconds(expiresIn?: number | null): number {
   }
 
   return DEFAULT_ACCESS_TOKEN_MAX_AGE_SECONDS;
-}
-
-export function getJwtExpiresInSeconds(accessToken: string): number | null {
-  try {
-    const payloadPart = accessToken.split(".")[1];
-    if (!payloadPart) {
-      return null;
-    }
-
-    const normalized = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
-    const payload = JSON.parse(atob(padded)) as { exp?: number };
-    if (typeof payload.exp !== "number") {
-      return null;
-    }
-
-    const seconds = payload.exp - Math.floor(Date.now() / 1000);
-    return seconds > 0 ? seconds : null;
-  } catch {
-    return null;
-  }
 }
 
 export function setAuthCookies(

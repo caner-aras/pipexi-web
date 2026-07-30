@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { decodeJwtPayload } from "@/lib/auth/jwt";
+
 export default function AuthCallbackPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -52,25 +54,20 @@ export default function AuthCallbackPage() {
           throw new Error("Failed to set session cookie.");
         }
 
-        const payloadBase64 = accessToken.split(".")[1];
-        if (!payloadBase64) {
+        const payloadJson = decodeJwtPayload(accessToken);
+        if (!payloadJson) {
           throw new Error("Invalid JWT token format.");
         }
 
-        const decodedPayload = atob(
-          payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
-        );
-        const payloadJson = JSON.parse(decodedPayload) as {
-          email?: string;
-          phone?: string | null;
-          user_metadata?: {
-            full_name?: string;
-            given_name?: string;
-            family_name?: string;
-            avatar_url?: string | null;
-          };
-        };
-        const userMetadata = payloadJson.user_metadata || {};
+        const userMetadata =
+          (payloadJson.user_metadata as
+            | {
+                full_name?: string;
+                given_name?: string;
+                family_name?: string;
+                avatar_url?: string | null;
+              }
+            | undefined) || {};
 
         const fullName = userMetadata.full_name || "";
         const nameParts = fullName.trim().split(/\s+/);
@@ -85,11 +82,11 @@ export default function AuthCallbackPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: payloadJson.email,
+            email: typeof payloadJson.email === "string" ? payloadJson.email : undefined,
             firstName,
             lastName,
             avatarUrl: userMetadata.avatar_url || null,
-            phone: payloadJson.phone || null,
+            phone: typeof payloadJson.phone === "string" ? payloadJson.phone : null,
           }),
         });
 

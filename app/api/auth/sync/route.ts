@@ -1,36 +1,41 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { ACCESS_TOKEN_COOKIE } from "@/types/auth";
+
+import { BackendApiError } from "@/lib/server/api-client";
+import { syncProfileWithBackend } from "@/lib/server/services/auth.service";
+import type { SyncProfileInput } from "@/types/auth";
 
 export async function POST(request: Request) {
+  let body: unknown;
+
   try {
-    const body = await request.json();
-    const cookieStore = await cookies();
-    const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ message: "Invalid request body" }, { status: 400 });
+  }
 
-    if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+  const input = (body ?? {}) as SyncProfileInput;
 
-    const backendUrl = process.env.BACKEND_API_URL || "http://127.0.0.1:5099/api/v1";
-
-    const response = await fetch(`${backendUrl}/auth/sync`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(body)
+  try {
+    const profile = await syncProfileWithBackend({
+      email: input.email,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      phone: input.phone,
+      avatarUrl: input.avatarUrl,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return NextResponse.json({ message: errorText || "Sync failed" }, { status: response.status });
+    return NextResponse.json({ data: profile });
+  } catch (error) {
+    if (error instanceof BackendApiError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.statusCode || 500 }
+      );
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch {
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to sync profile." },
+      { status: 500 }
+    );
   }
 }

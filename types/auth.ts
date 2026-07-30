@@ -66,3 +66,21 @@ export interface RegisterResponse {
   refresh_token?: string | null;
   expires_in?: number | null;
 }
+
+export interface SyncProfileInput {
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
+}
+
+export interface SyncProfileResponse {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string | null;
+  avatarUrl?: string | null;
+  created: boolean;
+}
