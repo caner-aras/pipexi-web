@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   MapPin,
   Megaphone,
+  MessageSquare,
   Settings,
   Shield,
   Users,
@@ -54,6 +55,7 @@ const iconMap = {
   FileText,
   FolderOpen,
   Megaphone,
+  MessageSquare,
   CalendarCheck2,
   Bell,
   History,
@@ -104,6 +106,7 @@ export const dashboardNavGroups: DashboardNavGroup[] = [
   {
     label: "Communication",
     items: [
+      navItem("messages", "Messages", "/messages", "MessageSquare"),
       navItem("announcements", "Announcements", "/announcements", "Megaphone"),
       navItem(
         "leaveRequests",

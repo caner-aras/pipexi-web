@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { UnauthorizedHandler } from "@/components/auth/unauthorized-handler";
+import { ConversationStreamBridge } from "@/components/layout/conversation-stream-bridge";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { OrganizationProvider } from "@/components/layout/organization-provider";
 import { TeamMemberTasksProvider } from "@/components/team-members/team-member-tasks-context";
@@ -66,6 +67,7 @@ export default async function DashboardLayout({
       initialSelectedOrganizationId={initialSelectedOrganizationId}
     >
       <UnauthorizedHandler />
+      <ConversationStreamBridge />
       <NavigationLoadingProvider>
         <SidebarProvider>
           <AppSidebar user={user} userError={userError} />

@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { useState } from "react";
 
 import { DashboardBreadcrumb } from "@/components/layout/dashboard-breadcrumb";
+import { MessagesHeaderAction } from "@/components/layout/messages-header-action";
 import { NotificationsHeaderAction } from "@/components/layout/notifications-header-action";
 import { OrganizationSwitcher } from "@/components/layout/organization-switcher";
 import { OrganizationTasksHeaderAction } from "@/components/tasks/organization-tasks-header-action";
@@ -42,6 +43,7 @@ export function DashboardHeader({ organizationsError }: DashboardHeaderProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
+        <MessagesHeaderAction />
         <NotificationsHeaderAction />
         <OrganizationTasksHeaderAction />
         <OrganizationSwitcher error={organizationsError} />
