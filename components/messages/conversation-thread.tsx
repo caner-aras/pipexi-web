@@ -55,20 +55,45 @@ export function ConversationThread({
   onBack,
 }: ConversationThreadProps) {
   const [page, setPage] = useState<PagedConversationMessages | null>(null);
+  const [olderMessages, setOlderMessages] = useState<ConversationMessage[]>([]);
+  const [oldestLoadedPage, setOldestLoadedPage] = useState(1);
+  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const loadingOlderRef = useRef(false);
   const isDirect = conversationType.toLowerCase() === "direct";
 
-  const messages = page?.items ?? [];
+  const pageSize = page?.pageSize ?? 50;
+  const totalCount = page?.totalCount ?? 0;
+  const hasMoreOlder = oldestLoadedPage * pageSize < totalCount;
+
+  const initialMessages = page?.items ?? [];
+  const allMessages = useMemo(() => {
+    const map = new Map<string, ConversationMessage>();
+    for (const msg of olderMessages) {
+      map.set(msg.id, msg);
+    }
+    for (const msg of initialMessages) {
+      map.set(msg.id, msg);
+    }
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [olderMessages, initialMessages]);
+
   const myMemberId = page?.currentOrganizationMemberId ?? null;
   const peerLastReadAt = page?.peerLastReadAt ?? null;
 
   async function loadMessages() {
     setIsLoading(true);
     setError(null);
+    setOlderMessages([]);
+    setOldestLoadedPage(1);
     try {
       const response = await fetch(
         `/api/conversations/${conversationId}/messages?pageNumber=1&pageSize=50`
@@ -90,14 +115,73 @@ export function ConversationThread({
     }
   }
 
+  async function loadOlderMessages() {
+    if (!hasMoreOlder || loadingOlderRef.current) {
+      return;
+    }
+
+    const container = scrollContainerRef.current;
+    const oldScrollHeight = container?.scrollHeight ?? 0;
+    const oldScrollTop = container?.scrollTop ?? 0;
+
+    loadingOlderRef.current = true;
+    setIsLoadingOlder(true);
+
+    try {
+      const nextPage = oldestLoadedPage + 1;
+      const response = await fetch(
+        `/api/conversations/${conversationId}/messages?pageNumber=${nextPage}&pageSize=${pageSize}`
+      );
+      const body = (await response.json()) as {
+        data?: PagedConversationMessages;
+        message?: string;
+      };
+
+      if (response.ok && body.data?.items) {
+        setOlderMessages((prev) => {
+          const existingIds = new Set(prev.map((m) => m.id));
+          const newItems = body.data!.items.filter((m) => !existingIds.has(m.id));
+          return [...newItems, ...prev];
+        });
+        setOldestLoadedPage(nextPage);
+
+        // Preserve scroll position after DOM update
+        requestAnimationFrame(() => {
+          if (container) {
+            const newScrollHeight = container.scrollHeight;
+            container.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
+          }
+        });
+      }
+    } catch {
+      // ignore
+    } finally {
+      loadingOlderRef.current = false;
+      setIsLoadingOlder(false);
+    }
+  }
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container || loadingOlderRef.current || !hasMoreOlder) {
+      return;
+    }
+
+    if (container.scrollTop < 80) {
+      void loadOlderMessages();
+    }
+  };
+
   useEffect(() => {
     void loadMessages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+    if (oldestLoadedPage === 1) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [initialMessages.length, oldestLoadedPage]);
 
   function appendMessage(message: ConversationMessage) {
     setPage((previous) => {
@@ -207,7 +291,7 @@ export function ConversationThread({
       );
     }
 
-    if (error && messages.length === 0) {
+    if (error && allMessages.length === 0) {
       return (
         <div className="flex flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">
           {error}
@@ -215,7 +299,7 @@ export function ConversationThread({
       );
     }
 
-    if (messages.length === 0) {
+    if (allMessages.length === 0) {
       return (
         <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
           No messages yet. Say hello.
@@ -224,12 +308,21 @@ export function ConversationThread({
     }
 
     return (
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
-        {messages.map((message, index) => {
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
+      >
+        {isLoadingOlder ? (
+          <div className="py-2 text-center text-xs text-muted-foreground">
+            Loading older messages…
+          </div>
+        ) : null}
+        {allMessages.map((message, index) => {
           const fromMe =
             message.isMine ||
             sameMemberId(message.senderOrganizationMemberId, myMemberId);
-          const previous = index > 0 ? messages[index - 1] : null;
+          const previous = index > 0 ? allMessages[index - 1] : null;
           const showSender =
             !isDirect &&
             !fromMe &&
@@ -282,10 +375,11 @@ export function ConversationThread({
       </div>
     );
   }, [
+    allMessages,
     error,
     isDirect,
     isLoading,
-    messages,
+    isLoadingOlder,
     myMemberId,
     page,
     peerLastReadAt,
