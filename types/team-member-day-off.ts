@@ -21,3 +21,26 @@ export interface UpdateTeamMemberDayOffInput {
   reason?: string;
   status?: string;
 }
+
+export interface PendingDayOff {
+  id: string;
+  teamMemberId: string;
+  memberName: string;
+  avatarUrl: string | null;
+  teamName: string;
+  startAt: string;
+  endAt: string;
+  reason: string | null;
+  createdAt: string;
+}
+
+export interface ActiveDayOff {
+  id: string;
+  teamMemberId: string;
+  memberName: string;
+  avatarUrl: string | null;
+  teamName: string;
+  startAt: string;
+  endAt: string;
+  reason: string | null;
+}

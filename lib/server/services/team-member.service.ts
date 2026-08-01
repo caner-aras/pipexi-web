@@ -5,6 +5,7 @@ import type {
   CreateTeamMemberDayOffInput,
   TeamMemberDayOff,
   UpdateTeamMemberDayOffInput,
+  PendingDayOff,
 } from "@/types/team-member-day-off";
 import type { TeamMemberDetails } from "@/types/team-member-details";
 import type { TeamMemberTask } from "@/types/team-member-task";
@@ -110,5 +111,13 @@ export async function deleteTeamMemberDayOff(
     {
       method: "DELETE",
     }
+  );
+}
+
+export async function getPendingOrganizationDayOffs(
+  organizationId: string
+): Promise<PendingDayOff[]> {
+  return backendFetch<PendingDayOff[]>(
+    `/organizations/${organizationId}/teams/day-offs/pending`
   );
 }

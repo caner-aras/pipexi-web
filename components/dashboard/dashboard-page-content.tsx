@@ -43,6 +43,8 @@ import type {
   ReportSignal,
   ReportSummary,
 } from "@/types/report";
+import { PendingDayOffsDialog } from "./pending-day-offs-dialog";
+import type { PendingDayOff } from "@/types/team-member-day-off";
 
 const TREND_DAY_OPTIONS = [
   { value: "7", label: "Past 7 days" },
@@ -299,7 +301,13 @@ function OverviewStatsList({ stats }: { stats: OverviewStat[] }) {
   );
 }
 
-function SignalsRow({ signals }: { signals: ReportSignal[] }) {
+function SignalsRow({
+  signals,
+  onSignalClick,
+}: {
+  signals: ReportSignal[];
+  onSignalClick?: (key: string) => void;
+}) {
   if (signals.length === 0) {
     return null;
   }
@@ -308,12 +316,10 @@ function SignalsRow({ signals }: { signals: ReportSignal[] }) {
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
       {signals.map((signal) => {
         const Icon = getSignalIcon(signal.key);
-
-        return (
-          <div
-            key={signal.key}
-            className="inline-flex items-center gap-1.5 text-sm"
-          >
+        const isClickable = onSignalClick != null;
+        
+        const content = (
+          <>
             <Icon
               className={cn("size-3.5", getSignalToneClass(signal.tone))}
             />
@@ -326,6 +332,33 @@ function SignalsRow({ signals }: { signals: ReportSignal[] }) {
             >
               {signal.value}
             </span>
+          </>
+        );
+
+        if (isClickable && (signal.key === "pending_dayoffs" || Number(signal.value) > 0)) {
+           // We'll allow clicking on it. Actually let's just make it a button if it's pending_dayoffs for now, or just make it clickable if onSignalClick is provided.
+           // Actually, the easiest is to just check if there is an onSignalClick, and pass the key.
+        }
+
+        if (isClickable && signal.key === "pending_dayoffs" && Number(signal.value) > 0) {
+          return (
+            <button
+              key={signal.key}
+              type="button"
+              onClick={() => onSignalClick(signal.key)}
+              className="inline-flex items-center gap-1.5 text-sm hover:underline"
+            >
+              {content}
+            </button>
+          );
+        }
+
+        return (
+          <div
+            key={signal.key}
+            className="inline-flex items-center gap-1.5 text-sm"
+          >
+            {content}
           </div>
         );
       })}
@@ -853,6 +886,7 @@ interface DashboardPageContentProps {
   initialTrendDays: number;
   initialFutureDays: number;
   summary: ReportSummary | null;
+  pendingDayOffs: PendingDayOff[];
   error: string | null;
 }
 
@@ -862,8 +896,10 @@ export function DashboardPageContent({
   initialTrendDays,
   initialFutureDays,
   summary: initialSummary,
+  pendingDayOffs: initialPendingDayOffs,
   error: initialError,
 }: DashboardPageContentProps) {
+  const [pendingDayOffsOpen, setPendingDayOffsOpen] = useState(false);
   const [trendDays, setTrendDays] = useState(String(initialTrendDays));
   const [futureDays, setFutureDays] = useState(String(initialFutureDays));
   const [summary, setSummary] = useState(initialSummary);
@@ -1011,7 +1047,14 @@ export function DashboardPageContent({
             />
           </section>
 
-          <SignalsRow signals={summary.signals} />
+          <SignalsRow 
+            signals={summary.signals} 
+            onSignalClick={(key) => {
+              if (key === "pending_dayoffs") {
+                setPendingDayOffsOpen(true);
+              }
+            }} 
+          />
 
           <section className="grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_16rem] xl:grid-cols-[minmax(0,1fr)_18rem]">
             <ScheduleFeed
@@ -1022,6 +1065,12 @@ export function DashboardPageContent({
           </section>
         </div>
       )}
+
+      <PendingDayOffsDialog
+        open={pendingDayOffsOpen}
+        onOpenChange={setPendingDayOffsOpen}
+        pendingDayOffs={initialPendingDayOffs}
+      />
     </>
   );
 }
