@@ -118,6 +118,12 @@ export const dashboardNavGroups: DashboardNavGroup[] = [
     ],
   },
   {
+    label: "Reports",
+    items: [
+      navItem("shiftReports", "Shift Report", "/reports/shifts", "FileText"),
+    ],
+  },
+  {
     label: "System",
     items: [
       navItem("settings", "Settings", "/settings", "Settings", [

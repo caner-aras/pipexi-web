@@ -245,7 +245,7 @@ function buildOverviewStats(
       label: "Missing shift forms",
       value: overview.missingRequiredShiftForms,
       icon: FileText,
-      href: "/shifts",
+      href: "/shifts/forms",
     },
   ];
 }

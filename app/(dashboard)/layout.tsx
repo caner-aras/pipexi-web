@@ -17,6 +17,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { AuthUser, Organization } from "@/types/auth";
 import { NavigationLoadingProvider } from "@/providers/navigation-loading-provider";
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 export default async function DashboardLayout({
   children,
 }: {

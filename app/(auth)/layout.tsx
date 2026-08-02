@@ -1,6 +1,8 @@
 import { NavLink as Link } from "@/components/ui/nav-link";
 import { ArrowLeft } from "lucide-react";
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 export default function AuthLayout({
   children,
 }: {
