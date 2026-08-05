@@ -78,6 +78,16 @@ export function UpdatePasswordForm() {
             Your account is now ready. The web dashboard is reserved for organization owners.
             Please download the Pipexi app from the App Store or Google Play to continue.
           </p>
+          <Button 
+            className="mt-6 w-full" 
+            variant="default"
+            onClick={() => {
+              router.push("/login");
+              router.refresh();
+            }}
+          >
+            Return to Login
+          </Button>
         </div>
       </div>
     );
