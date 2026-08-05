@@ -57,6 +57,10 @@ export default async function DashboardLayout({
     redirect("/onboarding");
   }
 
+  if (user && user.role?.toLowerCase() !== "owner") {
+    redirect("/app-only");
+  }
+
   const cookieOrganizationId = await getSelectedOrganizationIdFromCookie();
   const initialSelectedOrganizationId = resolveSelectedOrganizationId(
     organizations,
