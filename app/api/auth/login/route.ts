@@ -25,6 +25,28 @@ export async function POST(request: Request) {
   try {
     const tokenData = await loginWithBackend(parsed.data);
 
+    // After successful login, fetch the user profile using the new access token
+    const meResponse = await fetch(`${process.env.API_URL}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+      },
+    });
+
+    if (meResponse.ok) {
+      const authUser = await meResponse.json();
+      if (authUser.role?.toLowerCase() !== "owner") {
+        return NextResponse.json(
+          { message: "You don't have authorization to do this on the web side, please continue via the app." },
+          { status: 403 }
+        );
+      }
+    } else {
+       return NextResponse.json(
+        { message: "Failed to verify user permissions." },
+        { status: 401 }
+      );
+    }
+
     const response = NextResponse.json({ message: "Login successful" });
 
     setAuthCookies(response.cookies, {
