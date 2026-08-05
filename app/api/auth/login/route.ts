@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const tokenData = await loginWithBackend(parsed.data);
 
     // After successful login, fetch the user profile using the new access token
-    const meResponse = await fetch(`${process.env.API_URL}/auth/me`, {
+    const meResponse = await fetch(`${process.env.BACKEND_API_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
       },

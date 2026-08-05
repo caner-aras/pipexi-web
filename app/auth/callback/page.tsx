@@ -64,6 +64,11 @@ export default function AuthCallbackPage() {
           return;
         }
 
+        if (type === "invite") {
+          router.replace("/update-password");
+          return;
+        }
+
         const payloadJson = decodeJwtPayload(accessToken);
         if (!payloadJson) {
           throw new Error("Invalid JWT token format.");
