@@ -11,7 +11,6 @@ import { BrandLogo } from "@/components/layout/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/lib/supabase/client";
 
 const updatePasswordSchema = z
   .object({
@@ -42,38 +41,25 @@ export function UpdatePasswordForm() {
     },
   });
 
-  useEffect(() => {
-    // Listen for auth state changes (Supabase extracts hash tokens from the URL automatically)
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "PASSWORD_RECOVERY") {
-          // This event fires if the user clicks a recovery/invite link
-          console.log("Password recovery session established.");
-        }
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
   async function onSubmit(values: UpdatePasswordFormValues) {
     setError(null);
 
     try {
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: values.password,
+      const updateRes = await fetch("/api/auth/update-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: values.password }),
       });
 
-      if (updateError) {
-        setError(updateError.message);
+      if (!updateRes.ok) {
+        const errorData = await updateRes.json().catch(() => null);
+        setError(errorData?.message || "Failed to update password.");
         return;
       }
 
       setIsSuccess(true);
       // Sign out to prevent them from lingering in a web session (as they are not an owner)
-      await supabase.auth.signOut();
+      await fetch("/api/auth/logout", { method: "POST" });
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
     }

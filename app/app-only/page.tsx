@@ -3,16 +3,15 @@
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Smartphone, LogOut } from "lucide-react";
-import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function AppOnlyPage() {
   const router = useRouter();
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
+    await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
-    router.refresh(); // Force a refresh to clear server components and middleware state
+    router.refresh();
   }
 
   return (
