@@ -88,19 +88,33 @@ function LocationForm({
     }
 
     setIsLocating(true);
+
+    const handleSuccess = (position: GeolocationPosition) => {
+      setLatitude(String(position.coords.latitude));
+      setLongitude(String(position.coords.longitude));
+      toast.success("Location coordinates retrieved!");
+      setIsLocating(false);
+    };
+
+    const handleFailure = (err: GeolocationPositionError) => {
+      console.warn("Standard geolocation failed, attempting fallback:", err);
+      // Fallback with maximumAge cached location
+      navigator.geolocation.getCurrentPosition(
+        handleSuccess,
+        (fallbackErr) => {
+          console.error("Geolocation failed:", fallbackErr);
+          toast.error("Unable to determine location. Please ensure Wi-Fi and Location Services are enabled.");
+          setIsLocating(false);
+        },
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+      );
+    };
+
+    // Primary attempt for macOS/Browsers (enableHighAccuracy false prevents kCLErrorLocationUnknown)
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLatitude(String(position.coords.latitude));
-        setLongitude(String(position.coords.longitude));
-        toast.success("Location coordinates retrieved!");
-        setIsLocating(false);
-      },
-      (err) => {
-        console.error(err);
-        toast.error("Failed to retrieve current location. Please check browser permissions.");
-        setIsLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
+      handleSuccess,
+      handleFailure,
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   }
 
