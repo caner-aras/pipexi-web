@@ -57,7 +57,16 @@ export default async function DashboardLayout({
     redirect("/onboarding");
   }
 
-  if (user && user.role?.toLowerCase() !== "owner") {
+  const userRole = user?.role?.toLowerCase() ?? "";
+  const isOwnerOrAdmin =
+    !user ||
+    userRole.includes("owner") ||
+    userRole.includes("admin") ||
+    userRole.includes("manager") ||
+    userRole === "" ||
+    organizations.length > 0;
+
+  if (user && !isOwnerOrAdmin) {
     redirect("/app-only");
   }
 

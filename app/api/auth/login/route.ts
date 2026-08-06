@@ -34,7 +34,13 @@ export async function POST(request: Request) {
 
     if (meResponse.ok) {
       const authUser = await meResponse.json();
-      if (authUser.role?.toLowerCase() !== "owner") {
+      const userRole = authUser.role?.toLowerCase() ?? "";
+      const isOwner =
+        userRole.includes("owner") ||
+        userRole.includes("admin") ||
+        userRole.includes("manager");
+
+      if (!isOwner) {
         return NextResponse.json(
           { message: "You don't have authorization to do this on the web side, please continue via the app." },
           { status: 403 }

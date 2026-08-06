@@ -81,40 +81,64 @@ function LocationForm({
   const [isLocating, setIsLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  async function fetchIpLocation(): Promise<boolean> {
+    try {
+      const response = await fetch("https://ipapi.co/json/");
+      if (response.ok) {
+        const data = (await response.json()) as { latitude?: number; longitude?: number };
+        if (typeof data.latitude === "number" && typeof data.longitude === "number") {
+          setLatitude(String(data.latitude));
+          setLongitude(String(data.longitude));
+          toast.success("Location coordinates retrieved!");
+          return true;
+        }
+      }
+    } catch {
+      // Secondary free IP fallback
+    }
+
+    try {
+      const fallbackRes = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client");
+      if (fallbackRes.ok) {
+        const fallbackData = (await fallbackRes.json()) as { latitude?: number; longitude?: number };
+        if (typeof fallbackData.latitude === "number" && typeof fallbackData.longitude === "number") {
+          setLatitude(String(fallbackData.latitude));
+          setLongitude(String(fallbackData.longitude));
+          toast.success("Location coordinates retrieved!");
+          return true;
+        }
+      }
+    } catch {
+      // Ignore
+    }
+
+    return false;
+  }
+
   function handleGetCurrentLocation() {
+    setIsLocating(true);
+
     if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser.");
+      fetchIpLocation().finally(() => setIsLocating(false));
       return;
     }
 
-    setIsLocating(true);
-
-    const handleSuccess = (position: GeolocationPosition) => {
-      setLatitude(String(position.coords.latitude));
-      setLongitude(String(position.coords.longitude));
-      toast.success("Location coordinates retrieved!");
-      setIsLocating(false);
-    };
-
-    const handleFailure = (err: GeolocationPositionError) => {
-      console.warn("Standard geolocation failed, attempting fallback:", err);
-      // Fallback with maximumAge cached location
-      navigator.geolocation.getCurrentPosition(
-        handleSuccess,
-        (fallbackErr) => {
-          console.error("Geolocation failed:", fallbackErr);
-          toast.error("Unable to determine location. Please ensure Wi-Fi and Location Services are enabled.");
-          setIsLocating(false);
-        },
-        { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
-      );
-    };
-
-    // Primary attempt for macOS/Browsers (enableHighAccuracy false prevents kCLErrorLocationUnknown)
     navigator.geolocation.getCurrentPosition(
-      handleSuccess,
-      handleFailure,
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+      (position) => {
+        setLatitude(String(position.coords.latitude));
+        setLongitude(String(position.coords.longitude));
+        toast.success("Location coordinates retrieved!");
+        setIsLocating(false);
+      },
+      async (err) => {
+        console.warn("HTML5 Geolocation unavailable, falling back to IP Geolocation:", err);
+        const success = await fetchIpLocation();
+        if (!success) {
+          toast.error("Unable to determine location automatically. Please enter coordinates manually.");
+        }
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
     );
   }
 
