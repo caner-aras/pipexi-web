@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Loader2, Navigation } from "lucide-react";
 
 import { TimezonePicker } from "@/components/organizations/timezone-picker";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,31 @@ function LocationForm({
     location?.timezone ?? defaults?.timezone ?? defaultTimezone
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function handleGetCurrentLocation() {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(String(position.coords.latitude));
+        setLongitude(String(position.coords.longitude));
+        toast.success("Location coordinates retrieved!");
+        setIsLocating(false);
+      },
+      (err) => {
+        console.error(err);
+        toast.error("Failed to retrieve current location. Please check browser permissions.");
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
 
   async function handleSubmit() {
     if (!timezone) {
@@ -184,30 +209,51 @@ function LocationForm({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="location-latitude">Latitude</Label>
-              <Input
-                id="location-latitude"
-                type="number"
-                step="any"
-                value={latitude}
-                onChange={(event) => setLatitude(event.target.value)}
-                disabled={isSubmitting}
-                placeholder="39.533115"
-              />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium">Coordinates</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 px-2.5 text-xs gap-1.5"
+                disabled={isSubmitting || isLocating}
+                onClick={handleGetCurrentLocation}
+              >
+                {isLocating ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Navigation className="size-3.5 text-primary" />
+                )}
+                Get current location
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="location-longitude">Longitude</Label>
-              <Input
-                id="location-longitude"
-                type="number"
-                step="any"
-                value={longitude}
-                onChange={(event) => setLongitude(event.target.value)}
-                disabled={isSubmitting}
-                placeholder="32.607277"
-              />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="location-latitude" className="text-xs text-muted-foreground">Latitude</Label>
+                <Input
+                  id="location-latitude"
+                  type="number"
+                  step="any"
+                  value={latitude}
+                  onChange={(event) => setLatitude(event.target.value)}
+                  disabled={isSubmitting}
+                  placeholder="39.533115"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="location-longitude" className="text-xs text-muted-foreground">Longitude</Label>
+                <Input
+                  id="location-longitude"
+                  type="number"
+                  step="any"
+                  value={longitude}
+                  onChange={(event) => setLongitude(event.target.value)}
+                  disabled={isSubmitting}
+                  placeholder="32.607277"
+                />
+              </div>
             </div>
           </div>
 
